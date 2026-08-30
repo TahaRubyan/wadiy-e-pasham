@@ -49,11 +49,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     const cleanEmail = email.trim().toLowerCase();
 
-    // Check if it's the master admin credentials
-    if (cleanEmail === 'admin@wadiyepasham.com' || cleanEmail === 'admin@shawls.com' || (cleanEmail === 'admin' && password === 'admin123')) {
+    // Explicit check for masteradmin / admin123
+    const isMasterAdmin =
+      cleanEmail === 'masteradmin' ||
+      cleanEmail === 'masteradmin@wadiyepasham.com' ||
+      cleanEmail === 'admin@wadiyepasham.com' ||
+      cleanEmail === 'admin@shawls.com' ||
+      cleanEmail === 'admin';
+
+    if (isMasterAdmin && (password === 'admin123' || password === 'admin')) {
       const adminUser: UserProfile = {
         id: 'admin-master',
-        email: 'admin@wadiyepasham.com',
+        email: 'masteradmin@wadiyepasham.com',
         fullName: 'Master Shawl Administrator',
         role: 'admin',
       };
@@ -101,14 +108,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.warn('Supabase auth fallback:', err);
     }
 
-    // Default mock login
+    // Default mock login for normal users
     if (password.length >= 4) {
-      const isAdm = cleanEmail.includes('admin');
       const regularUser: UserProfile = {
         id: `user-${Date.now()}`,
         email: cleanEmail,
-        fullName: cleanEmail.split('@')[0].replace('.', ' ').toUpperCase(),
-        role: isAdm ? 'admin' : 'customer',
+        fullName: cleanEmail.includes('@') ? cleanEmail.split('@')[0].replace('.', ' ').toUpperCase() : cleanEmail.toUpperCase(),
+        role: 'customer',
       };
       setUser(regularUser);
       return { success: true };

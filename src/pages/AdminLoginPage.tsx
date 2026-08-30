@@ -6,7 +6,7 @@ import { useOrders } from '../context/OrderContext';
 
 export const AdminLoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('admin@wadiyepasham.com');
+  const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const { login, demoLogin } = useAuth();
   const { loginAdmin } = useOrders();

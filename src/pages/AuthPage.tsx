@@ -13,7 +13,7 @@ export const AuthPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  const [city, setCity] = useState('Islamabad');
+  const [city, setCity] = useState('');
   const [role, setRole] = useState<'customer' | 'admin'>('customer');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -29,21 +29,25 @@ export const AuthPage: React.FC = () => {
     setSuccessMsg('');
     setLoading(true);
 
+    const cleanInput = email.trim().toLowerCase();
+    const isMasterAdmin =
+      cleanInput === 'masteradmin' ||
+      cleanInput === 'masteradmin@wadiyepasham.com' ||
+      cleanInput === 'admin@wadiyepasham.com' ||
+      cleanInput === 'admin';
+
     if (mode === 'signin') {
       const res = await login(email, password);
       setLoading(false);
       if (res.success) {
-        if (email.toLowerCase().includes('admin') || password === 'admin123') {
+        if (isMasterAdmin && (password === 'admin123' || password === 'admin')) {
           loginAdmin('admin123');
+          setSuccessMsg('Authenticated as Master Administrator!');
+          setTimeout(() => navigate('/admin'), 300);
+        } else {
+          setSuccessMsg('Welcome back to WADIY-E-PASHAM!');
+          setTimeout(() => navigate('/shop'), 300);
         }
-        setSuccessMsg('Authenticated successfully!');
-        setTimeout(() => {
-          if (email.toLowerCase().includes('admin')) {
-            navigate('/admin');
-          } else {
-            navigate('/shop');
-          }
-        }, 400);
       } else {
         setError(res.error || 'Invalid credentials. Please verify your email and password.');
       }
@@ -51,17 +55,14 @@ export const AuthPage: React.FC = () => {
       const res = await signup(email, password, fullName, role);
       setLoading(false);
       if (res.success) {
-        if (role === 'admin' || email.toLowerCase().includes('admin')) {
+        if (role === 'admin' || isMasterAdmin) {
           loginAdmin('admin123');
+          setSuccessMsg('Admin account registered successfully!');
+          setTimeout(() => navigate('/admin'), 300);
+        } else {
+          setSuccessMsg('Account registered successfully! Welcome to WADIY-E-PASHAM.');
+          setTimeout(() => navigate('/shop'), 300);
         }
-        setSuccessMsg('Account registered successfully! Welcome to WADIY-E-PASHAM.');
-        setTimeout(() => {
-          if (role === 'admin' || email.toLowerCase().includes('admin')) {
-            navigate('/admin');
-          } else {
-            navigate('/shop');
-          }
-        }, 400);
       } else {
         setError(res.error || 'Failed to create account.');
       }
@@ -92,8 +93,8 @@ export const AuthPage: React.FC = () => {
           {/* Top Monogram */}
           <div className="relative z-10 space-y-4">
             <Link to="/" className="inline-flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#FFD6BA] text-[#4A2B20] font-serif font-bold text-lg flex items-center justify-center shadow-lg border border-white/20">
-                W
+              <div className="w-11 h-11 rounded-2xl bg-white flex items-center justify-center shadow-lg border border-white/20 overflow-hidden p-1.5">
+                <img src="/images/logo.png" alt="WADIY-E-PASHAM" className="w-full h-full object-contain" />
               </div>
               <div>
                 <span className="font-serif text-xl font-bold tracking-tight block text-white leading-none">

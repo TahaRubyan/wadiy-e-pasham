@@ -21,7 +21,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
     email: '',
     phone: '',
     address: '',
-    city: 'Islamabad',
+    city: '',
     notes: '',
     bankReferenceCode: '',
   });
@@ -47,8 +47,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
 
   const handleSubmitOrder = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customer.fullName || !customer.email || !customer.phone || !customer.address) {
-      alert('Please fill in all required shipping details.');
+    if (!customer.fullName || !customer.email || !customer.phone || !customer.address || !customer.city) {
+      alert('Please fill in all required shipping details including city and address.');
       return;
     }
 
@@ -76,7 +76,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
           transition={{ duration: 0.25, ease: 'easeOut' }}
           className="bg-[#FFF2EB] text-[#4A2B20] rounded-3xl max-w-4xl w-full shadow-2xl overflow-hidden border-2 border-[#FFD6BA] relative my-4 sm:my-8 max-h-[94vh] flex flex-col"
         >
-          {/* Top Luxury Header */}
+          {/* Top Luxury Header with Clear & Prominent Cancel Button */}
           <div className="p-4 sm:p-6 bg-[#FFE8CD] border-b border-[#FFD6BA] flex justify-between items-center flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="p-2 sm:p-2.5 bg-[#FFD6BA] text-[#4A2B20] rounded-2xl shadow-sm border border-[#FFE8CD]">
@@ -87,29 +87,29 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                   <Sparkles className="w-3 h-3 text-[#4A2B20]" /> WADIY-E-PASHAM Concierge
                 </span>
                 <h3 className="font-serif text-lg sm:text-2xl font-bold text-[#4A2B20]">
-                  Checkout & Shipping Information
+                  Checkout & Shipping Details
                 </h3>
               </div>
             </div>
 
-            {/* Top Action Buttons */}
+            {/* Top Action Buttons (Always Visible on Mobile & Desktop) */}
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={handleClearForm}
-                className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 bg-white hover:bg-[#FFD6BA] text-[#4A2B20] text-xs font-bold rounded-xl border border-[#FFE8CD] transition shadow-sm"
+                className="inline-flex items-center gap-1 px-3 py-1.5 bg-white hover:bg-[#FFD6BA] text-[#4A2B20] text-xs font-bold rounded-xl border border-[#FFE8CD] transition shadow-sm"
                 title="Clear all inputs"
               >
-                <RotateCcw className="w-3.5 h-3.5" /> Clear Form
+                <RotateCcw className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Clear</span>
               </button>
 
               <button
                 type="button"
                 onClick={onClose}
-                className="p-2 sm:p-2.5 rounded-2xl text-stone-600 hover:text-[#4A2B20] hover:bg-[#FFD6BA]/50 transition border border-transparent hover:border-[#FFD6BA]"
-                aria-label="Close checkout"
+                className="inline-flex items-center gap-1 px-3.5 py-1.5 bg-rose-50 text-rose-800 text-xs font-bold rounded-xl border border-rose-200 hover:bg-rose-100 transition shadow-sm"
+                aria-label="Cancel and close checkout"
               >
-                <X className="w-5 h-5 text-[#4A2B20]" />
+                <X className="w-4 h-4" /> Cancel
               </button>
             </div>
           </div>
@@ -141,9 +141,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                     <button
                       type="button"
                       onClick={handleClearForm}
-                      className="sm:hidden text-[11px] text-[#6B3E30] font-bold underline flex items-center gap-1"
+                      className="text-[11px] text-[#6B3E30] font-bold underline flex items-center gap-1 hover:text-[#4A2B20]"
                     >
-                      <RotateCcw className="w-3 h-3" /> Clear
+                      <RotateCcw className="w-3 h-3" /> Clear Fields
                     </button>
                   </div>
 

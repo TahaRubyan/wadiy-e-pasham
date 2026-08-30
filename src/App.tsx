@@ -8,6 +8,7 @@ import { AuthProvider } from './context/AuthContext';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { CartDrawer } from './components/cart/CartDrawer';
+import { CartToast } from './components/cart/CartToast';
 import { HomePage } from './pages/HomePage';
 import { ShopPage } from './pages/ShopPage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
@@ -72,6 +73,7 @@ export function App() {
                 <main className="flex-1 flex flex-col">
                   <AnimatedRoutes />
                 </main>
+                <CartToast />
                 <CartDrawer />
                 <Footer />
               </div>
