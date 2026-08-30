@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Order, CustomerDetails, PaymentMethod, OrderStatus } from '../types/order';
 import { CartItem } from '../types/product';
-import { MOCK_PRODUCTS } from '../data/mockProducts';
 
 interface OrderContextType {
   orders: Order[];
@@ -16,74 +15,18 @@ interface OrderContextType {
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
-const ORDERS_STORAGE_KEY = 'shawls_store_orders_v2';
+const ORDERS_STORAGE_KEY = 'shawls_store_orders_real_v4';
 const ADMIN_AUTH_KEY = 'shawls_store_admin_auth_v1';
 const ADMIN_PASSWORD = 'admin123';
 
-const INITIAL_SEED_ORDERS: Order[] = [
-  {
-    id: 'ord-101',
-    orderNumber: '#KHS-2026-101',
-    createdAt: '2026-08-23T14:30:00Z',
-    customer: {
-      fullName: 'Tariq Mahmood',
-      email: 'tariq.mahmood@example.com',
-      phone: '03001234567',
-      address: 'House #42, Street 7, F-8/2',
-      city: 'Islamabad',
-      notes: 'Please call before delivery.'
-    },
-    items: [
-      {
-        id: 'shawl-01-peach-gold',
-        product: MOCK_PRODUCTS[0],
-        selectedColor: MOCK_PRODUCTS[0].colors[0],
-        quantity: 1
-      }
-    ],
-    subtotal: 34500,
-    shippingFee: 0,
-    total: 34500,
-    paymentMethod: 'COD',
-    status: 'Dispatched',
-    currentLocation: 'In Transit: Rawalpindi Express Courier Regional Sorting Hub'
-  },
-  {
-    id: 'ord-102',
-    orderNumber: '#KHS-2026-102',
-    createdAt: '2026-08-23T18:45:00Z',
-    customer: {
-      fullName: 'Dr. Ayesha Rehman',
-      email: 'ayesha.rehman@example.com',
-      phone: '03219876543',
-      address: 'Apt 4B, Gulberg Heights, Main Boulevard',
-      city: 'Lahore',
-      bankReferenceCode: 'FT-9948210-HBL'
-    },
-    items: [
-      {
-        id: 'shawl-02-charcoal-black',
-        product: MOCK_PRODUCTS[1],
-        selectedColor: MOCK_PRODUCTS[1].colors[0],
-        quantity: 1
-      }
-    ],
-    subtotal: 28900,
-    shippingFee: 0,
-    total: 28900,
-    paymentMethod: 'BANK_TRANSFER',
-    status: 'Pending Verification',
-    currentLocation: 'Kashmir Craft Workshop Hub — Quality Inspection Completed'
-  }
-];
-
 export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Start with clean empty state so only real test orders appear with real timestamps
   const [orders, setOrders] = useState<Order[]>(() => {
     try {
       const saved = localStorage.getItem(ORDERS_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : INITIAL_SEED_ORDERS;
+      return saved ? JSON.parse(saved) : [];
     } catch {
-      return INITIAL_SEED_ORDERS;
+      return [];
     }
   });
 
@@ -104,7 +47,8 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [orders]);
 
   const loginAdmin = (password: string): boolean => {
-    if (password === ADMIN_PASSWORD || password === 'admin') {
+    const clean = password.replace(/\s+/g, '').toLowerCase();
+    if (clean === ADMIN_PASSWORD || clean === 'admin123' || clean === 'admin') {
       setIsAdminAuthenticated(true);
       localStorage.setItem(ADMIN_AUTH_KEY, 'true');
       return true;
@@ -139,7 +83,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       total,
       paymentMethod,
       status: paymentMethod === 'COD' ? 'Confirmed' : 'Pending Verification',
-      currentLocation: 'Order Logged — Preparing for Kashmir Handloom Dispatch'
+      currentLocation: 'Order Logged & Inspected at Kashmir Workshop — Preparing for Dispatch'
     };
 
     setOrders((prev) => [newOrder, ...prev]);
@@ -166,7 +110,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               ...ord,
               courierTrackingId: trackingId,
               courierPartner: partner,
-              status: 'Confirmed',
+              status: 'Dispatched',
               currentLocation: `Handed over to ${partner} — Courier Tracking #${trackingId}`,
             }
           : ord

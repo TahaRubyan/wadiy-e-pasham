@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Filter, SlidersHorizontal, Search, Sparkles, Crown, Award, Gem, Shield, X, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useProducts } from '../context/ProductContext';
 import { ProductCard } from '../components/product/ProductCard';
 import { TierGrade } from '../types/product';
-import { smoothScrollToTop } from '../utils/scrollToTop';
 
 export const ShopPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,6 +26,7 @@ export const ShopPage: React.FC = () => {
     { id: 'Gold', name: 'Gold Tier', icon: <Shield className="w-4 h-4 text-amber-600" />, desc: 'Classic everyday luxury & durable comfort blends', badgeColor: 'bg-yellow-100 text-yellow-900 border-yellow-300' },
   ];
 
+  // Real-time filter without jumping/resetting scroll position
   const handleTierSelect = (tier: TierGrade | 'ALL') => {
     setSelectedTier(tier);
     if (tier === 'ALL') {
@@ -34,7 +35,6 @@ export const ShopPage: React.FC = () => {
       searchParams.set('tier', tier);
     }
     setSearchParams(searchParams);
-    smoothScrollToTop();
   };
 
   const resetFilters = () => {
@@ -42,7 +42,6 @@ export const ShopPage: React.FC = () => {
     setSearchQuery('');
     setSortBy('featured');
     setSearchParams({});
-    smoothScrollToTop();
   };
 
   // Filtered & Sorted products calculation
@@ -84,11 +83,11 @@ export const ShopPage: React.FC = () => {
           Royal Shawls & Stoles Collection
         </h1>
         <p className="text-[#4A2B20]/80 text-xs sm:text-sm leading-relaxed font-medium">
-          Filter directly by certified luxury tiers. Each piece is hand-spun from high-altitude Ladakhi underfleece and woven by master Kashmiri artisans.
+          Filter directly by certified luxury tiers in real-time. Each piece is hand-spun from high-altitude Ladakhi underfleece and woven by master Kashmiri artisans.
         </p>
       </div>
 
-      {/* QUICK TIER SELECTOR PILLS */}
+      {/* QUICK TIER SELECTOR PILLS (Real-Time Filter) */}
       <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-2 scrollbar-none">
         {tiers.map((t) => {
           const isSelected = selectedTier === t.id;
@@ -96,7 +95,7 @@ export const ShopPage: React.FC = () => {
             <button
               key={t.id}
               onClick={() => handleTierSelect(t.id)}
-              className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 flex items-center gap-2 whitespace-nowrap shadow-sm border ${
+              className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 flex items-center gap-2 whitespace-nowrap shadow-sm border cursor-pointer ${
                 isSelected
                   ? 'bg-[#4A2B20] text-[#FFE8CD] border-[#4A2B20] shadow-md scale-105'
                   : 'bg-white text-[#4A2B20] hover:bg-[#FFE8CD] border-[#FFE8CD]'
@@ -165,7 +164,7 @@ export const ShopPage: React.FC = () => {
 
       </div>
 
-      {/* MAIN CATALOG AREA: 2-COLUMN DESKTOP (Sidebar Tiers + Products Grid) */}
+      {/* MAIN CATALOG AREA: 2-COLUMN DESKTOP (Sidebar Tiers + Real-Time Smooth Animated Products Grid) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Desktop Sidebar: Clean Luxury Tier Selector */}
@@ -196,9 +195,9 @@ export const ShopPage: React.FC = () => {
                 <button
                   key={t.id}
                   onClick={() => handleTierSelect(t.id)}
-                  className={`w-full text-left p-3.5 rounded-2xl border transition flex items-start justify-between gap-2 ${
+                  className={`w-full text-left p-3.5 rounded-2xl border transition-all duration-200 flex items-start justify-between gap-2 cursor-pointer ${
                     isSelected
-                      ? 'bg-[#FFE8CD] border-[#FFD6BA] ring-1 ring-[#FFD6BA] shadow-sm'
+                      ? 'bg-[#FFE8CD] border-[#FFD6BA] ring-1 ring-[#FFD6BA] shadow-sm scale-[1.02]'
                       : 'bg-[#FFF2EB]/40 border-transparent hover:bg-[#FFE8CD]/60'
                   }`}
                 >
@@ -228,10 +227,14 @@ export const ShopPage: React.FC = () => {
           </div>
         </aside>
 
-        {/* Products Grid */}
+        {/* Real-Time Animated Products Grid */}
         <main className="lg:col-span-9">
           {filteredProducts.length === 0 ? (
-            <div className="bg-white rounded-3xl p-12 text-center border border-[#FFE8CD] space-y-4 shadow-sm">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-3xl p-12 text-center border border-[#FFE8CD] space-y-4 shadow-sm"
+            >
               <div className="w-16 h-16 bg-[#FFE8CD] text-[#4A2B20] rounded-full flex items-center justify-center mx-auto">
                 <Search className="w-8 h-8" />
               </div>
@@ -245,13 +248,27 @@ export const ShopPage: React.FC = () => {
               >
                 Reset All Filters
               </button>
-            </div>
+            </motion.div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            <motion.div
+              layout
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              <AnimatePresence mode="popLayout">
+                {filteredProducts.map((product) => (
+                  <motion.div
+                    layout
+                    key={product.id}
+                    initial={{ opacity: 0, scale: 0.94, y: 12 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.94, y: 12 }}
+                    transition={{ duration: 0.28, ease: 'easeOut' }}
+                  >
+                    <ProductCard product={product} />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
           )}
         </main>
 

@@ -47,20 +47,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [user]);
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    const cleanEmail = email.trim().toLowerCase();
+    const cleanEmail = email.trim().toLowerCase().replace(/\s+/g, '');
+    const cleanPass = password.trim().toLowerCase().replace(/\s+/g, '');
 
-    // Explicit check for masteradmin / admin123
+    // Explicit check for admin / admin123 or masteradmin
     const isMasterAdmin =
+      cleanEmail === 'admin' ||
       cleanEmail === 'masteradmin' ||
       cleanEmail === 'masteradmin@wadiyepasham.com' ||
       cleanEmail === 'admin@wadiyepasham.com' ||
-      cleanEmail === 'admin@shawls.com' ||
-      cleanEmail === 'admin';
+      cleanEmail === 'admin@shawls.com';
 
-    if (isMasterAdmin && (password === 'admin123' || password === 'admin')) {
+    if (isMasterAdmin && (cleanPass === 'admin123' || cleanPass === 'admin')) {
       const adminUser: UserProfile = {
         id: 'admin-master',
-        email: 'masteradmin@wadiyepasham.com',
+        email: 'admin@wadiyepasham.com',
         fullName: 'Master Shawl Administrator',
         role: 'admin',
       };

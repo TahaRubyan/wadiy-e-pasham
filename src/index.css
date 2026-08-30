@@ -60,3 +60,28 @@
 .animate-marquee-slow:hover {
   animation-play-state: paused;
 }
+
+/* Dedicated A4 Print Stylesheet */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 15mm;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  header, nav, footer, .print\\:hidden, button {
+    display: none !important;
+  }
+
+  #printable-invoice-a4 {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { User, Mail, Lock, Sparkles, ArrowRight, CheckCircle2, KeyRound, Phone, MapPin, Feather, Award } from 'lucide-react';
+import { User, Mail, Lock, Sparkles, ArrowRight, CheckCircle2, Phone, MapPin, Feather, Award } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useOrders } from '../context/OrderContext';
 
@@ -19,7 +19,7 @@ export const AuthPage: React.FC = () => {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  const { login, signup, demoLogin } = useAuth();
+  const { login, signup } = useAuth();
   const { loginAdmin } = useOrders();
   const navigate = useNavigate();
 
@@ -66,16 +66,6 @@ export const AuthPage: React.FC = () => {
       } else {
         setError(res.error || 'Failed to create account.');
       }
-    }
-  };
-
-  const handleDemo = (demoRole: 'admin' | 'customer') => {
-    demoLogin(demoRole);
-    if (demoRole === 'admin') {
-      loginAdmin('admin123');
-      navigate('/admin');
-    } else {
-      navigate('/shop');
     }
   };
 
@@ -329,36 +319,12 @@ export const AuthPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-[#FFD6BA] text-[#4A2B20] font-bold rounded-2xl hover:bg-[#FFE8CD] transition shadow-lg flex items-center justify-center gap-2 text-sm border border-[#FFE8CD] mt-2"
+                className="w-full py-4 bg-[#FFD6BA] text-[#4A2B20] font-bold rounded-2xl hover:bg-[#FFE8CD] transition shadow-lg flex items-center justify-center gap-2 text-sm border border-[#FFE8CD] mt-4"
               >
-                {loading ? 'Verifying Credentials...' : mode === 'signin' ? 'Sign In & Access Dashboard' : 'Create Royal Account'} <ArrowRight className="w-4 h-4" />
+                {loading ? 'Verifying Credentials...' : mode === 'signin' ? 'Sign In to Account' : 'Create Royal Account'} <ArrowRight className="w-4 h-4" />
               </button>
             </form>
 
-          </div>
-
-          {/* Quick Demo Logins */}
-          <div className="pt-6 mt-6 border-t border-[#FFE8CD] space-y-3">
-            <span className="text-[10px] font-bold text-stone-500 uppercase tracking-widest block text-center">
-              Quick 1-Click Instant Demo Testing
-            </span>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => handleDemo('admin')}
-                className="px-3.5 py-2.5 bg-[#FFE8CD] text-[#4A2B20] text-xs font-bold rounded-xl hover:bg-[#FFD6BA] border border-[#FFD6BA] transition flex items-center justify-center gap-1.5 shadow-sm"
-              >
-                <KeyRound className="w-3.5 h-3.5 text-[#4A2B20]" /> Demo Admin (Admin Panel)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleDemo('customer')}
-                className="px-3.5 py-2.5 bg-[#FFF2EB] text-[#4A2B20] text-xs font-bold rounded-xl hover:bg-[#FFE8CD] border border-[#FFE8CD] transition flex items-center justify-center gap-1.5 shadow-sm"
-              >
-                <User className="w-3.5 h-3.5 text-[#4A2B20]" /> Demo Patron (Buyer View)
-              </button>
-            </div>
           </div>
 
         </div>

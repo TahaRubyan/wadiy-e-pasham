@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, MapPin, Truck, CheckCircle2, ArrowRight, Package } from 'lucide-react';
+import { Search, MapPin, Truck, CheckCircle2, ArrowRight, Package, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useOrders } from '../context/OrderContext';
 import { Order } from '../types/order';
 
 export const ParcelTrackingPage: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const initialQuery = searchParams.get('order') || '';
+  const initialQuery = searchParams.get('order') || searchParams.get('q') || '';
 
   const [query, setQuery] = useState(initialQuery);
   const [searchedOrder, setSearchedOrder] = useState<Order | null>(null);
@@ -23,7 +23,9 @@ export const ParcelTrackingPage: React.FC = () => {
     const found = orders.find(
       (o) =>
         o.orderNumber.toLowerCase() === q ||
-        o.customer.phone.replace(/\s+/g, '').includes(q.replace(/\s+/g, ''))
+        (o.courierTrackingId && o.courierTrackingId.toLowerCase() === q) ||
+        o.customer.phone.replace(/\s+/g, '').includes(q.replace(/\s+/g, '')) ||
+        o.customer.email.toLowerCase() === q
     );
 
     setSearchedOrder(found || null);
@@ -48,7 +50,7 @@ export const ParcelTrackingPage: React.FC = () => {
   const steps = [
     { title: 'Order Placed', desc: 'Received & Logged' },
     { title: 'Confirmed', desc: 'Craft Inspection' },
-    { title: 'In Transit', desc: 'Dispatched via Express Courier' },
+    { title: 'In Transit', desc: 'Dispatched via Courier' },
     { title: 'Delivered', desc: 'Received at Doorstep' },
   ];
 
@@ -69,7 +71,7 @@ export const ParcelTrackingPage: React.FC = () => {
           Track Your WADIY-E-PASHAM Parcel
         </h1>
         <p className="text-xs sm:text-sm text-stone-600 font-medium">
-          Enter your Order Number (e.g. <span className="font-bold text-[#4A2B20]">#KHS-2026-101</span>) or Phone Number to view live parcel location and dispatch updates.
+          Enter your Order Number (e.g. <span className="font-bold text-[#4A2B20]">#KHS-2026-101</span>), Courier Tracking ID, or Phone Number to view live location updates.
         </p>
       </motion.div>
 
@@ -88,7 +90,7 @@ export const ParcelTrackingPage: React.FC = () => {
               required
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="e.g. #KHS-2026-101 or 03001234567"
+              placeholder="Enter Order # or Tracking ID (e.g. #KHS-2026-101)"
               className="w-full pl-10 pr-4 py-3 bg-[#FFF2EB] border border-[#FFE8CD] rounded-xl text-sm font-semibold text-[#4A2B20] focus:outline-none focus:ring-2 focus:ring-[#FFD6BA]"
             />
           </div>
@@ -99,10 +101,6 @@ export const ParcelTrackingPage: React.FC = () => {
             Track <ArrowRight className="w-4 h-4" />
           </button>
         </form>
-
-        <div className="flex justify-between items-center text-[11px] text-stone-500 pt-1 font-medium">
-          <span>Sample demo orders: <button onClick={() => { setQuery('#KHS-2026-101'); }} className="underline font-bold text-[#4A2B20]">#KHS-2026-101</button> or <button onClick={() => { setQuery('#KHS-2026-102'); }} className="underline font-bold text-[#4A2B20]">#KHS-2026-102</button></span>
-        </div>
       </motion.div>
 
       {/* SEARCH RESULT DISPLAY */}
@@ -120,7 +118,7 @@ export const ParcelTrackingPage: React.FC = () => {
               </div>
               <h3 className="font-serif text-lg font-bold text-[#4A2B20]">Order Not Found</h3>
               <p className="text-xs text-stone-500">
-                No active parcel found for "{query}". Please check your order confirmation details.
+                No active parcel found for "{query}". Please check your order confirmation details or contact support.
               </p>
             </div>
           ) : (
@@ -140,26 +138,26 @@ export const ParcelTrackingPage: React.FC = () => {
                   <span className="inline-flex items-center gap-1 font-bold text-xs px-3 py-1 rounded-full bg-[#FFD6BA] text-[#4A2B20] shadow border border-[#FFE8CD]">
                     <Truck className="w-3.5 h-3.5" /> {searchedOrder.status}
                   </span>
-                  <span className="block text-[11px] text-stone-500 mt-1">
-                    {searchedOrder.paymentMethod === 'COD' ? 'Cash on Delivery' : 'Online Bank Transfer'}
-                  </span>
+                  {searchedOrder.courierTrackingId && (
+                    <span className="block text-[11px] font-mono font-bold text-[#4A2B20] mt-1 bg-[#FFE8CD] px-2 py-0.5 rounded border border-[#FFD6BA]">
+                      {searchedOrder.courierPartner || 'TCS'}: {searchedOrder.courierTrackingId}
+                    </span>
+                  )}
                 </div>
               </div>
 
-              {/* Live Location Alert Box */}
+              {/* REAL-TIME LOCATION BOX UPDATED DIRECTLY FROM ADMIN PANEL */}
               <div className="p-4 bg-[#FFE8CD] rounded-2xl border border-[#FFD6BA] flex items-start gap-3 text-xs text-[#4A2B20]">
                 <MapPin className="w-5 h-5 text-[#4A2B20] flex-shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-bold text-[#6B3E30] uppercase tracking-wider text-[11px] block">Current Parcel Location</span>
-                  <p className="font-semibold text-sm mt-0.5">
-                    {searchedOrder.status === 'Delivered'
-                      ? 'Delivered to recipient address'
-                      : searchedOrder.status === 'Dispatched'
-                      ? 'In Transit: Express Courier Regional Sorting Hub (Rawalpindi/Lahore)'
-                      : 'WADIY-E-PASHAM Workshop Hub — Quality Inspection Completed'}
+                <div className="space-y-1">
+                  <span className="font-bold text-[#6B3E30] uppercase tracking-wider text-[11px] block">
+                    Current Parcel Location (Live Admin Update)
+                  </span>
+                  <p className="font-semibold text-sm text-[#4A2B20]">
+                    {searchedOrder.currentLocation || 'Order Logged & Inspected at Kashmir Workshop — Preparing for Dispatch'}
                   </p>
-                  <p className="text-[11px] text-stone-600 mt-1">
-                    Estimated Delivery: 24–48 Hours nationwide express courier dispatch.
+                  <p className="text-[11px] text-stone-600">
+                    Destination: {searchedOrder.customer.address}, {searchedOrder.customer.city}
                   </p>
                 </div>
               </div>
@@ -204,6 +202,12 @@ export const ParcelTrackingPage: React.FC = () => {
                     <div className="font-bold text-[#4A2B20]">PKR {(item.product.price * item.quantity).toLocaleString()}</div>
                   </div>
                 ))}
+              </div>
+
+              {/* Authenticity Guarantee */}
+              <div className="p-3 bg-[#FFF2EB] rounded-xl border border-[#FFE8CD] flex items-center gap-2 text-xs text-[#4A2B20]">
+                <ShieldCheck className="w-4 h-4 text-[#4A2B20] flex-shrink-0" />
+                <span>Includes 100% Certified Ladakhi Cashmere Purity Hallmark & Ring-Test Provenance.</span>
               </div>
 
             </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ShieldCheck, Lock, ArrowRight, KeyRound } from 'lucide-react';
+import { ShieldCheck, Lock, ArrowRight, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useOrders } from '../context/OrderContext';
 
@@ -8,25 +8,30 @@ export const AdminLoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
-  const { login, demoLogin } = useAuth();
+  const { login } = useAuth();
   const { loginAdmin } = useOrders();
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await login(email, password);
-    if (res.success || password === 'admin123' || password === 'admin') {
+    setError('');
+
+    const cleanInput = email.trim().toLowerCase().replace(/\s+/g, '');
+    const cleanPass = password.trim().toLowerCase().replace(/\s+/g, '');
+
+    const isMasterAdmin =
+      cleanInput === 'admin' ||
+      cleanInput === 'masteradmin' ||
+      cleanInput === 'admin@wadiyepasham.com' ||
+      cleanInput === 'admin@shawls.com';
+
+    if (isMasterAdmin && (cleanPass === 'admin123' || cleanPass === 'admin')) {
+      await login(email, password);
       loginAdmin('admin123');
       navigate('/admin');
     } else {
-      setError(res.error || 'Invalid admin credentials. Try password "admin123" or click Instant Demo.');
+      setError('Invalid admin credentials. Please enter valid administrative access details.');
     }
-  };
-
-  const handleDemoLogin = () => {
-    demoLogin('admin');
-    loginAdmin('admin123');
-    navigate('/admin');
   };
 
   return (
@@ -50,16 +55,19 @@ export const AdminLoginPage: React.FC = () => {
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="text-xs font-bold text-[#4A2B20] uppercase tracking-wider block mb-1">
-              Admin Email
+              Admin Username / Email
             </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@wadiyepasham.com"
-              className="w-full px-4 py-2.5 bg-[#FFF2EB] border border-[#FFE8CD] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FFD6BA] text-[#4A2B20] font-medium"
-            />
+            <div className="relative">
+              <User className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
+              <input
+                type="text"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter username (e.g. admin)"
+                className="w-full pl-10 pr-4 py-2.5 bg-[#FFF2EB] border border-[#FFE8CD] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FFD6BA] text-[#4A2B20] font-medium"
+              />
+            </div>
           </div>
 
           <div>
@@ -73,7 +81,7 @@ export const AdminLoginPage: React.FC = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password (e.g. admin123)"
+                placeholder="Enter password"
                 className="w-full pl-10 pr-4 py-2.5 bg-[#FFF2EB] border border-[#FFE8CD] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FFD6BA] text-[#4A2B20] font-medium"
               />
             </div>
@@ -87,18 +95,11 @@ export const AdminLoginPage: React.FC = () => {
           </button>
         </form>
 
-        <div className="pt-4 border-t border-[#FFE8CD] text-center space-y-3">
-          <button
-            onClick={handleDemoLogin}
-            className="w-full py-2.5 bg-[#FFE8CD] text-[#4A2B20] font-bold text-xs rounded-xl hover:bg-[#FFD6BA] border border-[#FFD6BA] transition flex items-center justify-center gap-1.5 shadow-sm"
-          >
-            <KeyRound className="w-4 h-4 text-[#4A2B20]" /> Instant 1-Click Admin Access
-          </button>
-
+        <div className="pt-4 border-t border-[#FFE8CD] text-center">
           <div className="text-xs text-stone-500">
             Are you a customer?{' '}
             <Link to="/login" className="font-bold text-[#4A2B20] underline">
-              Sign In as Buyer
+              Sign In as Patron
             </Link>
           </div>
         </div>
