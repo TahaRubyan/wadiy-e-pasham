@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Building2, Truck, ArrowRight, ShieldCheck, CheckCircle2, Lock, Sparkles, MapPin, Phone, Mail, User, RotateCcw } from 'lucide-react';
+import { X, Building2, Truck, ArrowRight, ShieldCheck, CheckCircle2, Lock, Sparkles, MapPin, Phone, Mail, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 import { useOrders } from '../../context/OrderContext';
@@ -27,23 +27,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
   });
 
   const [submitting, setSubmitting] = useState(false);
-  const [clearedToast, setClearedToast] = useState(false);
 
   if (!isOpen) return null;
-
-  const handleClearForm = () => {
-    setCustomer({
-      fullName: '',
-      email: '',
-      phone: '',
-      address: '',
-      city: '',
-      notes: '',
-      bankReferenceCode: '',
-    });
-    setClearedToast(true);
-    setTimeout(() => setClearedToast(false), 2500);
-  };
 
   const handleSubmitOrder = (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,7 +61,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
           transition={{ duration: 0.25, ease: 'easeOut' }}
           className="bg-[#FFF2EB] text-[#4A2B20] rounded-3xl max-w-4xl w-full shadow-2xl overflow-hidden border-2 border-[#FFD6BA] relative my-4 sm:my-8 max-h-[94vh] flex flex-col"
         >
-          {/* Top Luxury Header with Clear & Prominent Cancel Button */}
+          {/* Top Luxury Header with Single Clean Cancel Action */}
           <div className="p-4 sm:p-6 bg-[#FFE8CD] border-b border-[#FFD6BA] flex justify-between items-center flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="p-2 sm:p-2.5 bg-[#FFD6BA] text-[#4A2B20] rounded-2xl shadow-sm border border-[#FFE8CD]">
@@ -84,45 +69,24 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
               </div>
               <div>
                 <span className="text-[10px] uppercase tracking-widest font-bold text-[#6B3E30] flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-[#4A2B20]" /> WADIY-E-PASHAM Concierge
+                  <Sparkles className="w-3 h-3 text-[#4A2B20]" /> WADIY-E-PASHAM Official Checkout
                 </span>
                 <h3 className="font-serif text-lg sm:text-2xl font-bold text-[#4A2B20]">
-                  Checkout & Shipping Details
+                  Shipping & Payment Details
                 </h3>
               </div>
             </div>
 
-            {/* Top Action Buttons (Always Visible on Mobile & Desktop) */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleClearForm}
-                className="inline-flex items-center gap-1 px-3 py-1.5 bg-white hover:bg-[#FFD6BA] text-[#4A2B20] text-xs font-bold rounded-xl border border-[#FFE8CD] transition shadow-sm"
-                title="Clear all inputs"
-              >
-                <RotateCcw className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Clear</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={onClose}
-                className="inline-flex items-center gap-1 px-3.5 py-1.5 bg-rose-50 text-rose-800 text-xs font-bold rounded-xl border border-rose-200 hover:bg-rose-100 transition shadow-sm"
-                aria-label="Cancel and close checkout"
-              >
-                <X className="w-4 h-4" /> Cancel
-              </button>
-            </div>
+            {/* Single Cancel Button */}
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex items-center gap-1 px-3.5 py-1.5 bg-rose-50 text-rose-800 text-xs font-bold rounded-xl border border-rose-200 hover:bg-rose-100 transition shadow-sm"
+              aria-label="Cancel and close checkout"
+            >
+              <X className="w-4 h-4" /> Cancel
+            </button>
           </div>
-
-          {/* Cleared Toast Banner */}
-          {clearedToast && (
-            <div className="bg-[#FFD6BA] text-[#4A2B20] text-xs font-bold px-4 py-2 flex items-center justify-between border-b border-[#FFE8CD]">
-              <span className="flex items-center gap-1.5">
-                <RotateCcw className="w-3.5 h-3.5" /> Form fields cleared successfully!
-              </span>
-              <button onClick={() => setClearedToast(false)}><X className="w-3.5 h-3.5" /></button>
-            </div>
-          )}
 
           {/* Scrollable Form Body with Custom Scrollbar */}
           <div className="overflow-y-auto p-4 sm:p-8 space-y-6 flex-1 pr-2 sm:pr-4">
@@ -133,18 +97,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                 
                 {/* Step 1: Customer Details */}
                 <div className="bg-white p-5 sm:p-6 rounded-3xl border border-[#FFE8CD] space-y-4 shadow-sm">
-                  <div className="flex items-center justify-between pb-2 border-b border-[#FFE8CD]">
-                    <div className="flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-full bg-[#FFD6BA] text-[#4A2B20] font-bold text-xs flex items-center justify-center shadow-sm">1</span>
-                      <h4 className="font-serif text-sm sm:text-base font-bold text-[#4A2B20]">Shipping Destination</h4>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleClearForm}
-                      className="text-[11px] text-[#6B3E30] font-bold underline flex items-center gap-1 hover:text-[#4A2B20]"
-                    >
-                      <RotateCcw className="w-3 h-3" /> Clear Fields
-                    </button>
+                  <div className="flex items-center gap-2 pb-2 border-b border-[#FFE8CD]">
+                    <span className="w-6 h-6 rounded-full bg-[#FFD6BA] text-[#4A2B20] font-bold text-xs flex items-center justify-center shadow-sm">1</span>
+                    <h4 className="font-serif text-sm sm:text-base font-bold text-[#4A2B20]">Shipping Destination</h4>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -152,102 +107,58 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                       <label className="text-[11px] font-bold text-[#4A2B20] uppercase tracking-wider block mb-1.5 flex items-center gap-1">
                         <User className="w-3.5 h-3.5 text-[#6B3E30]" /> Full Name *
                       </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          required
-                          value={customer.fullName}
-                          onChange={(e) => setCustomer({ ...customer, fullName: e.target.value })}
-                          placeholder="e.g. Dr. Alizeh Shah"
-                          className="w-full px-4 py-2.5 bg-[#FFF2EB] border border-[#FFE8CD] rounded-xl text-sm text-[#4A2B20] focus:outline-none focus:ring-2 focus:ring-[#FFD6BA] font-medium"
-                        />
-                        {customer.fullName && (
-                          <button
-                            type="button"
-                            onClick={() => setCustomer({ ...customer, fullName: '' })}
-                            className="absolute right-3 top-3 text-stone-400 hover:text-stone-600"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
+                      <input
+                        type="text"
+                        required
+                        value={customer.fullName}
+                        onChange={(e) => setCustomer({ ...customer, fullName: e.target.value })}
+                        placeholder="e.g. Dr. Alizeh Shah"
+                        className="w-full px-4 py-2.5 bg-[#FFF2EB] border border-[#FFE8CD] rounded-xl text-sm text-[#4A2B20] focus:outline-none focus:ring-2 focus:ring-[#FFD6BA] font-medium"
+                      />
                     </div>
 
                     <div>
                       <label className="text-[11px] font-bold text-[#4A2B20] uppercase tracking-wider block mb-1.5 flex items-center gap-1">
                         <Mail className="w-3.5 h-3.5 text-[#6B3E30]" /> Email Address *
                       </label>
-                      <div className="relative">
-                        <input
-                          type="email"
-                          required
-                          value={customer.email}
-                          onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
-                          placeholder="e.g. alizeh@example.com"
-                          className="w-full px-4 py-2.5 bg-[#FFF2EB] border border-[#FFE8CD] rounded-xl text-sm text-[#4A2B20] focus:outline-none focus:ring-2 focus:ring-[#FFD6BA] font-medium"
-                        />
-                        {customer.email && (
-                          <button
-                            type="button"
-                            onClick={() => setCustomer({ ...customer, email: '' })}
-                            className="absolute right-3 top-3 text-stone-400 hover:text-stone-600"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
+                      <input
+                        type="email"
+                        required
+                        value={customer.email}
+                        onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
+                        placeholder="e.g. alizeh@example.com"
+                        className="w-full px-4 py-2.5 bg-[#FFF2EB] border border-[#FFE8CD] rounded-xl text-sm text-[#4A2B20] focus:outline-none focus:ring-2 focus:ring-[#FFD6BA] font-medium"
+                      />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-[11px] font-bold text-[#4A2B20] uppercase tracking-wider block mb-1.5 flex items-center gap-1">
-                        <Phone className="w-3.5 h-3.5 text-[#6B3E30]" /> Phone / WhatsApp (For Delivery) *
+                        <Phone className="w-3.5 h-3.5 text-[#6B3E30]" /> Phone / WhatsApp *
                       </label>
-                      <div className="relative">
-                        <input
-                          type="tel"
-                          required
-                          value={customer.phone}
-                          onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
-                          placeholder="e.g. 0300 1234567"
-                          className="w-full px-4 py-2.5 bg-[#FFF2EB] border border-[#FFE8CD] rounded-xl text-sm text-[#4A2B20] focus:outline-none focus:ring-2 focus:ring-[#FFD6BA] font-medium"
-                        />
-                        {customer.phone && (
-                          <button
-                            type="button"
-                            onClick={() => setCustomer({ ...customer, phone: '' })}
-                            className="absolute right-3 top-3 text-stone-400 hover:text-stone-600"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
+                      <input
+                        type="tel"
+                        required
+                        value={customer.phone}
+                        onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
+                        placeholder="e.g. 0300 1234567"
+                        className="w-full px-4 py-2.5 bg-[#FFF2EB] border border-[#FFE8CD] rounded-xl text-sm text-[#4A2B20] focus:outline-none focus:ring-2 focus:ring-[#FFD6BA] font-medium"
+                      />
                     </div>
 
                     <div>
                       <label className="text-[11px] font-bold text-[#4A2B20] uppercase tracking-wider block mb-1.5 flex items-center gap-1">
                         <MapPin className="w-3.5 h-3.5 text-[#6B3E30]" /> City *
                       </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          required
-                          value={customer.city}
-                          onChange={(e) => setCustomer({ ...customer, city: e.target.value })}
-                          placeholder="e.g. Islamabad / Lahore / Karachi"
-                          className="w-full px-4 py-2.5 bg-[#FFF2EB] border border-[#FFE8CD] rounded-xl text-sm text-[#4A2B20] focus:outline-none focus:ring-2 focus:ring-[#FFD6BA] font-medium"
-                        />
-                        {customer.city && (
-                          <button
-                            type="button"
-                            onClick={() => setCustomer({ ...customer, city: '' })}
-                            className="absolute right-3 top-3 text-stone-400 hover:text-stone-600"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
+                      <input
+                        type="text"
+                        required
+                        value={customer.city}
+                        onChange={(e) => setCustomer({ ...customer, city: e.target.value })}
+                        placeholder="e.g. Islamabad / Lahore / Karachi"
+                        className="w-full px-4 py-2.5 bg-[#FFF2EB] border border-[#FFE8CD] rounded-xl text-sm text-[#4A2B20] focus:outline-none focus:ring-2 focus:ring-[#FFD6BA] font-medium"
+                      />
                     </div>
                   </div>
 
@@ -277,7 +188,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                     <button
                       type="button"
                       onClick={() => setPaymentMethod('COD')}
-                      className={`p-4 rounded-2xl border text-left transition flex items-start gap-3 relative ${
+                      className={`p-4 rounded-2xl border text-left transition flex items-start gap-3 relative cursor-pointer ${
                         paymentMethod === 'COD'
                           ? 'border-[#FFD6BA] bg-[#FFE8CD] ring-2 ring-[#FFD6BA] shadow-sm'
                           : 'border-stone-200 bg-white hover:border-[#FFD6BA]'
@@ -295,7 +206,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                     <button
                       type="button"
                       onClick={() => setPaymentMethod('BANK_TRANSFER')}
-                      className={`p-4 rounded-2xl border text-left transition flex items-start gap-3 relative ${
+                      className={`p-4 rounded-2xl border text-left transition flex items-start gap-3 relative cursor-pointer ${
                         paymentMethod === 'BANK_TRANSFER'
                           ? 'border-[#FFD6BA] bg-[#FFE8CD] ring-2 ring-[#FFD6BA] shadow-sm'
                           : 'border-stone-200 bg-white hover:border-[#FFD6BA]'
@@ -400,33 +311,23 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                     </div>
                   </div>
 
-                  {/* CTAs: Confirm + Cancel */}
+                  {/* CTAs: Confirm & Single Cancel Button */}
                   <div className="space-y-2 pt-2">
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full py-4 bg-[#FFD6BA] text-[#4A2B20] font-bold rounded-2xl hover:bg-[#FFE8CD] transition shadow-lg flex items-center justify-center gap-2 text-sm border border-[#FFE8CD]"
+                      className="w-full py-4 bg-[#FFD6BA] text-[#4A2B20] font-bold rounded-2xl hover:bg-[#FFE8CD] transition shadow-lg flex items-center justify-center gap-2 text-sm border border-[#FFE8CD] cursor-pointer"
                     >
-                      {submitting ? 'Confirming Royal Order...' : 'Confirm Order & View Receipt'} <ArrowRight className="w-4 h-4" />
+                      {submitting ? 'Confirming Royal Order...' : 'Confirm Royal Order (COD / Bank)'} <ArrowRight className="w-4 h-4" />
                     </button>
 
-                    <div className="grid grid-cols-2 gap-2 pt-1">
-                      <button
-                        type="button"
-                        onClick={handleClearForm}
-                        className="py-2.5 bg-white text-stone-700 text-xs font-bold rounded-xl border border-stone-200 hover:bg-stone-50 transition flex items-center justify-center gap-1"
-                      >
-                        <RotateCcw className="w-3.5 h-3.5" /> Clear All
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={onClose}
-                        className="py-2.5 bg-rose-50 text-rose-800 text-xs font-bold rounded-xl border border-rose-200 hover:bg-rose-100 transition flex items-center justify-center gap-1"
-                      >
-                        <X className="w-3.5 h-3.5" /> Cancel Order
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      className="w-full py-2.5 bg-rose-50 text-rose-800 text-xs font-bold rounded-xl border border-rose-200 hover:bg-rose-100 transition flex items-center justify-center gap-1 cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" /> Cancel Order & Return to Bag
+                    </button>
                   </div>
 
                 </div>

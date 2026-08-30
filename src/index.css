@@ -61,27 +61,41 @@
   animation-play-state: paused;
 }
 
-/* Dedicated A4 Print Stylesheet */
+/* Foolproof Isolated A4 Print Stylesheet */
 @media print {
   @page {
     size: A4 portrait;
-    margin: 12mm 15mm;
+    margin: 10mm 15mm;
   }
 
-  body {
+  html, body {
     background: white !important;
-    color: black !important;
+    color: #000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  header, nav, footer, .print\\:hidden, button {
-    display: none !important;
+  /* Hide all regular web page elements */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Only display the printable invoice container */
+  #printable-invoice-a4,
+  #printable-invoice-a4 * {
+    visibility: visible !important;
   }
 
   #printable-invoice-a4 {
-    display: block !important;
-    position: static !important;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
     width: 100% !important;
-    padding: 0 !important;
     margin: 0 !important;
+    padding: 20px !important;
+    background: white !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    border: none !important;
   }
 }

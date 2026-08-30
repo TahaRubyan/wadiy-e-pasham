@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Mail, Send, Sparkles, CheckCircle2, ShieldCheck, Truck } from 'lucide-react';
+import { X, Mail, Send, Sparkles, CheckCircle2, ShieldCheck, Truck, ExternalLink } from 'lucide-react';
 import { Order } from '../../types/order';
 
 interface ShareEmailInvoiceModalProps {
@@ -8,11 +8,11 @@ interface ShareEmailInvoiceModalProps {
 }
 
 export const ShareEmailInvoiceModal: React.FC<ShareEmailInvoiceModalProps> = ({ order, onClose }) => {
-  const [sentNotice, setSentNotice] = useState(false);
+  const [emailStatus, setEmailStatus] = useState<string | null>(null);
 
   if (!order) return null;
 
-  const emailSubject = `WADIY-E-PASHAM — Official Invoice & Courier Dispatch Confirmation (${order.orderNumber})`;
+  const emailSubject = `WADIY-E-PASHAM — Official Invoice & Courier Dispatch (${order.orderNumber})`;
   
   const itemsText = order.items
     .map(
@@ -23,7 +23,7 @@ export const ShareEmailInvoiceModal: React.FC<ShareEmailInvoiceModalProps> = ({ 
 
   const emailBody = `Dear ${order.customer.fullName},
 
-Thank you for your valued patron order with WADIY-E-PASHAM. We are delighted to confirm that your royal handloom shawls have been inspected, authenticated, and scheduled for express courier dispatch.
+Thank you for your order with WADIY-E-PASHAM. We are delighted to confirm that your royal handloom shawls have been inspected, authenticated, and scheduled for courier dispatch.
 
 =======================================================
                OFFICIAL ORDER INVOICE
@@ -47,7 +47,7 @@ Courier Partner  : ${order.courierPartner || 'TCS Express'}
 Tracking ID      : ${order.courierTrackingId || 'TCS-DISPATCH-CONFIRMED'}
 Delivery Address : ${order.customer.address}, ${order.customer.city}
 Customer Contact : ${order.customer.phone}
-Live Tracking    : https://wadiyepasham.com/track?order=${order.orderNumber}
+Live Parcel Link : https://wadiyepasham.com/track?order=${order.orderNumber}
 
 -------------------------------------------------------
 AUTHENTICITY & HANDLOOM PROVENANCE:
@@ -64,19 +64,37 @@ The Atelier Guild
 WADIY-E-PASHAM — Luxury Kashmir Shawls & Stoles
 `;
 
-  const handleSendEmail = () => {
-    // Construct standard mailto URL without opening blank target tabs
-    const mailtoUrl = `mailto:${encodeURIComponent(order.customer.email)}?subject=${encodeURIComponent(
+  // Standard Mailto Trigger
+  const handleSendMailto = () => {
+    const link = document.createElement('a');
+    link.href = `mailto:${encodeURIComponent(order.customer.email)}?subject=${encodeURIComponent(
       emailSubject
     )}&body=${encodeURIComponent(emailBody)}`;
-    
-    // Direct browser navigation opens the default email client cleanly without blank page
-    window.location.href = mailtoUrl;
-    setSentNotice(true);
-    setTimeout(() => {
-      setSentNotice(false);
-      onClose();
-    }, 1800);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setEmailStatus('Mail client triggered!');
+    setTimeout(() => setEmailStatus(null), 3000);
+  };
+
+  // Direct Gmail Web Trigger
+  const handleOpenGmail = () => {
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+      order.customer.email
+    )}&su=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+    window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+    setEmailStatus('Opening in Gmail Web Compose...');
+    setTimeout(() => setEmailStatus(null), 3000);
+  };
+
+  // Direct Outlook Web Trigger
+  const handleOpenOutlook = () => {
+    const outlookUrl = `https://outlook.live.com/mail/0/deeplink/compose?to=${encodeURIComponent(
+      order.customer.email
+    )}&subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+    window.open(outlookUrl, '_blank', 'noopener,noreferrer');
+    setEmailStatus('Opening in Outlook Web Compose...');
+    setTimeout(() => setEmailStatus(null), 3000);
   };
 
   return (
@@ -92,10 +110,10 @@ WADIY-E-PASHAM — Luxury Kashmir Shawls & Stoles
             </div>
             <div>
               <span className="text-[10px] uppercase font-bold tracking-widest text-[#6B3E30] flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-[#4A2B20]" /> Dispatch Notification
+                <Sparkles className="w-3 h-3 text-[#4A2B20]" /> Dispatch Concierge
               </span>
               <h3 className="font-serif text-lg font-bold text-[#4A2B20]">
-                Send Invoice & Dispatch Email to Customer
+                Share Invoice & Dispatch Confirmation on Mail
               </h3>
             </div>
           </div>
@@ -112,7 +130,7 @@ WADIY-E-PASHAM — Luxury Kashmir Shawls & Stoles
         <div className="bg-[#FFF2EB] p-4 border-b border-[#FFE8CD] space-y-2 text-xs flex-shrink-0">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-              <span className="text-stone-500 font-medium">Customer: </span>
+              <span className="text-stone-500 font-medium">To: </span>
               <span className="font-bold text-[#4A2B20]">{order.customer.fullName} &lt;{order.customer.email}&gt;</span>
             </div>
             <div className="flex items-center gap-1.5 font-bold text-xs bg-[#FFD6BA] text-[#4A2B20] px-2.5 py-1 rounded-xl border border-[#FFE8CD]">
@@ -126,27 +144,57 @@ WADIY-E-PASHAM — Luxury Kashmir Shawls & Stoles
           </div>
         </div>
 
+        {/* Feedback Alert if triggered */}
+        {emailStatus && (
+          <div className="bg-emerald-50 text-emerald-800 border-b border-emerald-200 px-4 py-2 text-xs font-bold flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            {emailStatus}
+          </div>
+        )}
+
         {/* Formatted Invoice Preview */}
         <div className="p-5 overflow-y-auto flex-1 bg-[#FFFDFB]">
-          <pre className="whitespace-pre-wrap font-mono leading-relaxed bg-[#FFF2EB]/50 p-4 rounded-2xl border border-[#FFE8CD] text-xs text-stone-800">
+          <pre className="whitespace-pre-wrap font-mono leading-relaxed bg-[#FFF2EB]/50 p-4 rounded-2xl border border-[#FFE8CD] text-xs text-stone-800 select-text">
             {emailBody}
           </pre>
         </div>
 
-        {/* Modal Bottom Action (Direct Send Email Action Only) */}
-        <div className="bg-[#FFE8CD]/80 px-6 py-4 border-t border-[#FFD6BA] flex items-center justify-between flex-shrink-0">
-          <span className="text-xs text-stone-600 font-medium flex items-center gap-1">
-            <ShieldCheck className="w-4 h-4 text-[#4A2B20]" /> Includes Courier Tracking ID & Order Breakdown
-          </span>
+        {/* Modal Bottom Actions: Dedicated Email Triggers Only */}
+        <div className="bg-[#FFE8CD]/80 px-6 py-4 border-t border-[#FFD6BA] flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
+          <div className="text-xs text-stone-600 font-medium flex items-center gap-1">
+            <ShieldCheck className="w-4 h-4 text-[#4A2B20]" /> Pre-formatted with Tracking ID #{order.courierTrackingId || 'DISPATCH'}
+          </div>
 
-          <button
-            type="button"
-            onClick={handleSendEmail}
-            className="px-6 py-3 bg-[#FFD6BA] text-[#4A2B20] font-bold text-xs rounded-xl hover:bg-[#FFE8CD] transition shadow-md border border-[#FFE8CD] flex items-center gap-2"
-          >
-            {sentNotice ? <CheckCircle2 className="w-4 h-4 text-emerald-700" /> : <Send className="w-4 h-4" />}
-            {sentNotice ? 'Opening Email Client...' : 'Send Invoice Email to Customer'}
-          </button>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            {/* Primary Default Mail App */}
+            <button
+              type="button"
+              onClick={handleSendMailto}
+              className="flex-1 sm:flex-initial px-4 py-2.5 bg-[#4A2B20] text-[#FFE8CD] font-bold text-xs rounded-xl hover:bg-[#3B2117] transition shadow flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <Send className="w-3.5 h-3.5" /> Send via Default Mail
+            </button>
+
+            {/* Direct Gmail Web Fallback */}
+            <button
+              type="button"
+              onClick={handleOpenGmail}
+              className="flex-1 sm:flex-initial px-3.5 py-2.5 bg-[#FFD6BA] text-[#4A2B20] font-bold text-xs rounded-xl hover:bg-[#FFE8CD] transition border border-[#FFE8CD] shadow flex items-center justify-center gap-1 cursor-pointer"
+              title="Open directly in Gmail"
+            >
+              <ExternalLink className="w-3.5 h-3.5" /> Gmail Web
+            </button>
+
+            {/* Direct Outlook Web Fallback */}
+            <button
+              type="button"
+              onClick={handleOpenOutlook}
+              className="flex-1 sm:flex-initial px-3 py-2.5 bg-white text-[#4A2B20] font-bold text-xs rounded-xl hover:bg-[#FFE8CD] transition border border-[#FFE8CD] shadow flex items-center justify-center gap-1 cursor-pointer"
+              title="Open directly in Outlook"
+            >
+              Outlook
+            </button>
+          </div>
         </div>
 
       </div>

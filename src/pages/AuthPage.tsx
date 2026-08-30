@@ -14,7 +14,6 @@ export const AuthPage: React.FC = () => {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [city, setCity] = useState('');
-  const [role, setRole] = useState<'customer' | 'admin'>('customer');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -52,17 +51,12 @@ export const AuthPage: React.FC = () => {
         setError(res.error || 'Invalid credentials. Please verify your email and password.');
       }
     } else {
-      const res = await signup(email, password, fullName, role);
+      // All new accounts are strictly customer / patron accounts
+      const res = await signup(email, password, fullName, 'customer');
       setLoading(false);
       if (res.success) {
-        if (role === 'admin' || isMasterAdmin) {
-          loginAdmin('admin123');
-          setSuccessMsg('Admin account registered successfully!');
-          setTimeout(() => navigate('/admin'), 300);
-        } else {
-          setSuccessMsg('Account registered successfully! Welcome to WADIY-E-PASHAM.');
-          setTimeout(() => navigate('/shop'), 300);
-        }
+        setSuccessMsg('Account registered successfully! Welcome to WADIY-E-PASHAM.');
+        setTimeout(() => navigate('/shop'), 300);
       } else {
         setError(res.error || 'Failed to create account.');
       }
@@ -283,45 +277,12 @@ export const AuthPage: React.FC = () => {
                 </div>
               </div>
 
-              {mode === 'signup' && (
-                <div>
-                  <label className="text-[11px] font-bold text-[#4A2B20] uppercase tracking-wider block mb-1">
-                    Account Classification
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setRole('customer')}
-                      className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition ${
-                        role === 'customer'
-                          ? 'bg-[#FFD6BA] text-[#4A2B20] border-[#FFD6BA] shadow-sm'
-                          : 'bg-[#FFF2EB] text-stone-600 border-stone-200'
-                      }`}
-                    >
-                      Normal Patron / Buyer
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setRole('admin')}
-                      className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition ${
-                        role === 'admin'
-                          ? 'bg-[#FFD6BA] text-[#4A2B20] border-[#FFD6BA] shadow-sm'
-                          : 'bg-[#FFF2EB] text-stone-600 border-stone-200'
-                      }`}
-                    >
-                      Admin Staff Member
-                    </button>
-                  </div>
-                </div>
-              )}
-
               <button
                 type="submit"
                 disabled={loading}
                 className="w-full py-4 bg-[#FFD6BA] text-[#4A2B20] font-bold rounded-2xl hover:bg-[#FFE8CD] transition shadow-lg flex items-center justify-center gap-2 text-sm border border-[#FFE8CD] mt-4"
               >
-                {loading ? 'Verifying Credentials...' : mode === 'signin' ? 'Sign In to Account' : 'Create Royal Account'} <ArrowRight className="w-4 h-4" />
+                {loading ? 'Verifying Credentials...' : mode === 'signin' ? 'Sign In to Account' : 'Create Royal Patron Account'} <ArrowRight className="w-4 h-4" />
               </button>
             </form>
 

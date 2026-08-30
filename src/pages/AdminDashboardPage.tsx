@@ -46,7 +46,7 @@ export const AdminDashboardPage: React.FC = () => {
           to="/login"
           className="inline-block px-6 py-3 bg-[#FFD6BA] text-[#4A2B20] font-bold rounded-xl text-sm shadow border border-[#FFE8CD]"
         >
-          Go to Sign In & Demo Access
+          Sign In to Admin Portal
         </Link>
       </div>
     );

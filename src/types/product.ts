@@ -56,6 +56,7 @@ export interface ShawlProduct {
   isBestseller?: boolean;
   isNewArrival?: boolean;
   isOutOfStock?: boolean;
+  releaseDate?: string; // e.g. "2026-08-20"
 }
 
 export interface CartItem {

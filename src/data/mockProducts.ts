@@ -67,6 +67,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     isBestseller: true,
     isNewArrival: true,
     isOutOfStock: false,
+    releaseDate: '2026-08-28',
   },
 
   // 2. Platinum Tier
@@ -101,6 +102,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     isBestseller: true,
     isNewArrival: false,
     isOutOfStock: false,
+    releaseDate: '2026-08-20',
   },
 
   // 3. Imperial Tier
@@ -134,6 +136,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     isBestseller: false,
     isNewArrival: true,
     isOutOfStock: false,
+    releaseDate: '2026-08-25',
   },
 
   // 4. Gold Tier
