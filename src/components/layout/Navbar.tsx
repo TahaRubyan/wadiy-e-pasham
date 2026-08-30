@@ -65,11 +65,11 @@ export const Navbar: React.FC = () => {
               </button>
             </div>
 
-            {/* Brand Logo & Royal Shawl Icon */}
+            {/* Brand Logo & Royal Shawl Icon (Bigger & Transparent) */}
             <div className="flex-1 lg:flex-initial flex items-center justify-center lg:justify-start">
-              <Link to="/" onClick={smoothScrollToTop} className="flex items-center gap-3 group">
-                <div className="w-11 h-11 rounded-2xl bg-white flex items-center justify-center border border-[#FFE8CD] shadow-sm group-hover:scale-105 transition-transform overflow-hidden p-1.5">
-                  <img src="/images/logo.png" alt="WADIY-E-PASHAM" className="w-full h-full object-contain" />
+              <Link to="/" onClick={smoothScrollToTop} className="flex items-center gap-3.5 group">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <img src="/images/logo.png" alt="WADIY-E-PASHAM" className="w-full h-full object-contain filter drop-shadow-sm" />
                 </div>
                 <div className="flex flex-col">
                   <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#4A2B20] leading-none">
@@ -208,9 +208,9 @@ export const Navbar: React.FC = () => {
           <aside className="fixed inset-y-0 left-0 h-[100dvh] w-72 sm:w-80 bg-[#FFF2EB] p-6 shadow-2xl flex flex-col justify-between overflow-y-auto border-r border-[#FFE8CD]">
             <div className="space-y-6">
               <div className="flex items-center justify-between border-b border-[#FFE8CD] pb-4">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-[#FFE8CD] shadow-sm overflow-hidden p-1">
-                    <img src="/images/logo.png" alt="WADIY-E-PASHAM" className="w-full h-full object-contain" />
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 flex items-center justify-center">
+                    <img src="/images/logo.png" alt="WADIY-E-PASHAM" className="w-full h-full object-contain filter drop-shadow-sm" />
                   </div>
                   <span className="font-serif text-lg font-bold text-[#4A2B20]">WADIY-E-PASHAM</span>
                 </div>

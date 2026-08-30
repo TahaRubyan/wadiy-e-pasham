@@ -25,4 +25,6 @@ export interface Order {
   paymentMethod: PaymentMethod;
   status: OrderStatus;
   currentLocation?: string; // e.g. "In Transit: Rawalpindi Express Sorting Hub"
+  courierTrackingId?: string; // e.g. "TCS-9842109" or "LEO-771829"
+  courierPartner?: string; // e.g. "TCS Express", "Leopards Courier", "Trax Logistics"
 }

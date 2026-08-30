@@ -17,7 +17,7 @@ export type ArticleType =
 
 export type TierGrade = 'Platinum' | 'Gold' | 'Diamond' | 'Imperial';
 
-export type FabricType = ArticleType | 'Pure Pashmina' | 'Pure Cashmere' | 'Kani Weave' | 'Merino Wool' | 'Silk Blend';
+export type FabricType = string;
 
 export interface ColorOption {
   name: string;

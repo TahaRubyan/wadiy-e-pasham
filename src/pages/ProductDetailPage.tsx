@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingBag, ShieldCheck, Truck, RefreshCw, ChevronRight, Check, Sparkles, Feather, FileText, Info, Flame } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { ShoppingBag, ShieldCheck, Truck, RefreshCw, ChevronRight, Sparkles, Flame, ZoomIn, X, Award, CheckCircle2 } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 import { useProducts } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
 import { ProductCard } from '../components/product/ProductCard';
@@ -17,6 +17,20 @@ export const ProductDetailPage: React.FC = () => {
 
   // Dynamic random viewers count between 30 and 100
   const liveViewersCount = useMemo(() => Math.floor(30 + Math.random() * 71), [handle]);
+
+  // Image Zoom states for Desktop & Mobile
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [mobileZoomModalOpen, setMobileZoomModalOpen] = useState(false);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imageContainerRef.current) return;
+    const { left, top, width, height } = imageContainerRef.current.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setZoomPos({ x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) });
+  };
 
   if (!product) {
     return (
@@ -35,7 +49,6 @@ export const ProductDetailPage: React.FC = () => {
     (product.colors[0] && product.colors[0].image) || product.images[0]
   );
   const [quantity, setQuantity] = useState(1);
-  const [addedToast, setAddedToast] = useState(false);
   const [activeSopTab, setActiveSopTab] = useState<'washing' | 'storage' | 'steaming' | 'authenticity'>('washing');
 
   const handleColorSelect = (color: ColorOption) => {
@@ -48,20 +61,18 @@ export const ProductDetailPage: React.FC = () => {
   const handleAddToCart = () => {
     if (!product.isOutOfStock) {
       addToCart(product, selectedColor, quantity);
-      setAddedToast(true);
-      setTimeout(() => setAddedToast(false), 3000);
     }
   };
 
   const relatedProducts = products.filter(
-    (p) => p.id !== product.id && (p.subCategory === product.subCategory || p.tierGrade === product.tierGrade)
+    (p) => p.id !== product.id && (p.tierGrade === product.tierGrade)
   ).slice(0, 3);
 
   const sopTabs = [
-    { id: 'washing', label: 'Washing SOPs' },
-    { id: 'storage', label: 'Storage & Care' },
-    { id: 'steaming', label: 'Steaming Rules' },
-    { id: 'authenticity', label: 'Authenticity Cert' },
+    { id: 'washing', label: 'Sacred Washing SOP' },
+    { id: 'storage', label: 'Heirloom Storage & Care' },
+    { id: 'steaming', label: 'Royal Steaming Rules' },
+    { id: 'authenticity', label: 'Ring-Test & Hallmark' },
   ];
 
   return (
@@ -81,32 +92,58 @@ export const ProductDetailPage: React.FC = () => {
       {/* Main Product Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         
-        {/* Left Image Gallery */}
+        {/* Left Image Gallery with Desktop Hover Magnify + Mobile Zoom Button */}
         <div className="lg:col-span-7 space-y-4">
-          <div className="relative aspect-[3/4] rounded-3xl overflow-hidden bg-[#FFE8CD]/60 border border-[#FFE8CD] shadow-lg">
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={selectedImage}
-                src={selectedImage}
-                alt={product.title}
-                onError={() => setSelectedImage(product.images[1] || 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=1200&q=80')}
-                initial={{ opacity: 0.7, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0.7 }}
-                transition={{ duration: 0.3 }}
-                className={`w-full h-full object-cover ${product.isOutOfStock ? 'grayscale opacity-75' : ''}`}
-              />
-            </AnimatePresence>
+          <div
+            ref={imageContainerRef}
+            onMouseEnter={() => setIsZoomed(true)}
+            onMouseLeave={() => setIsZoomed(false)}
+            onMouseMove={handleMouseMove}
+            className="relative aspect-[3/4] rounded-3xl overflow-hidden bg-[#FFE8CD]/60 border border-[#FFE8CD] shadow-lg cursor-crosshair group"
+          >
+            {/* Main Product Image with Smooth Cursor Zoom */}
+            <img
+              src={selectedImage}
+              alt={product.title}
+              onError={() => setSelectedImage(product.images[1] || 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=1200&q=80')}
+              style={
+                isZoomed
+                  ? {
+                      transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                      transform: 'scale(2.2)',
+                      transition: 'transform 0.1s ease-out',
+                    }
+                  : { transform: 'scale(1)', transition: 'transform 0.3s ease-out' }
+              }
+              className={`w-full h-full object-cover select-none ${product.isOutOfStock ? 'grayscale opacity-75' : ''}`}
+            />
 
-            {product.isOutOfStock ? (
-              <span className="absolute top-4 left-4 bg-rose-600 text-white text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow">
-                Out of Stock
-              </span>
-            ) : (
-              <span className="absolute top-4 left-4 bg-[#FFD6BA] text-[#4A2B20] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow border border-[#FFE8CD] flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5" /> {product.tierGrade || 'Platinum'} Tier
-              </span>
-            )}
+            {/* Badges */}
+            <div className="absolute top-4 left-4 flex flex-col gap-2 pointer-events-none">
+              {product.isOutOfStock ? (
+                <span className="bg-rose-600 text-white text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow">
+                  Out of Stock
+                </span>
+              ) : (
+                <span className="bg-[#FFD6BA] text-[#4A2B20] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow border border-[#FFE8CD] flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5" /> {product.tierGrade || 'Platinum'} Tier
+                </span>
+              )}
+            </div>
+
+            {/* Desktop Hover Hint */}
+            <div className="hidden lg:flex absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white text-[11px] font-semibold px-3 py-1.5 rounded-full items-center gap-1.5 pointer-events-none opacity-80 group-hover:opacity-100 transition">
+              <ZoomIn className="w-3.5 h-3.5" /> Hover to Inspect Micro-Weave
+            </div>
+
+            {/* Mobile Zoom Trigger Button */}
+            <button
+              type="button"
+              onClick={() => setMobileZoomModalOpen(true)}
+              className="lg:hidden absolute bottom-4 right-4 bg-white/90 backdrop-blur-md text-[#4A2B20] text-xs font-bold px-3.5 py-2 rounded-2xl flex items-center gap-1.5 shadow-lg border border-[#FFE8CD]"
+            >
+              <ZoomIn className="w-4 h-4 text-[#4A2B20]" /> Tap to Zoom
+            </button>
           </div>
 
           {/* Thumbnails */}
@@ -136,146 +173,109 @@ export const ProductDetailPage: React.FC = () => {
 
             <div className="flex items-center gap-2 mb-2">
               <span className="px-2.5 py-1 bg-[#FFE8CD] text-[#4A2B20] text-xs font-bold rounded-md uppercase tracking-wider border border-[#FFD6BA]">
-                {product.articleType || product.fabric}
+                {product.tierGrade} Tier Handloom
               </span>
-              <span className="text-xs text-stone-500 font-semibold uppercase tracking-wider">
-                {product.subCategory} Collection
-              </span>
+              {product.micronCount && (
+                <span className="px-2.5 py-1 bg-white text-stone-700 text-xs font-semibold rounded-md border border-stone-200">
+                  {product.micronCount}
+                </span>
+              )}
             </div>
 
-            <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#4A2B20] leading-tight">
-              {product.title}
-            </h1>
-            
-            <p className="text-sm text-stone-500 mt-1 font-medium">{product.subtitle}</p>
+            <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#4A2B20]">{product.title}</h1>
+            <p className="text-sm text-stone-600 font-serif italic mt-1">{product.subtitle}</p>
 
-            <div className="mt-4 flex items-baseline gap-3">
-              <span className="font-serif text-3xl font-bold text-[#4A2B20]">
+            <div className="flex items-baseline gap-3 mt-4">
+              <span className="text-2xl sm:text-3xl font-bold text-[#4A2B20]">
                 PKR {product.price.toLocaleString()}
               </span>
-              {product.compareAtPrice && product.compareAtPrice > product.price && (
+              {product.compareAtPrice && (
                 <span className="text-base text-stone-400 line-through">
                   PKR {product.compareAtPrice.toLocaleString()}
                 </span>
               )}
-              {product.compareAtPrice && product.compareAtPrice > product.price && (
-                <span className="text-xs bg-[#FFDCDC] text-[#4A2B20] font-bold px-2.5 py-0.5 rounded">
-                  Save PKR {(product.compareAtPrice - product.price).toLocaleString()}
-                </span>
-              )}
             </div>
           </div>
 
-          <p className="text-stone-700 text-sm leading-relaxed border-t border-b border-[#FFE8CD] py-4">
-            {product.description}
-          </p>
+          <p className="text-sm text-[#4A2B20]/80 leading-relaxed">{product.description}</p>
 
-          {/* Color Selection */}
-          {product.colors && product.colors.length > 0 && (
-            <div className="space-y-2.5">
-              <div className="flex justify-between items-center text-xs font-bold uppercase tracking-wider">
-                <span className="text-stone-700">Select Color Variant:</span>
-                <span className="text-[#4A2B20] font-extrabold">{selectedColor.name}</span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                {product.colors.map((color, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleColorSelect(color)}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition border-2 ${
-                      selectedColor.name === color.name ? 'border-[#4A2B20] scale-110 shadow-lg ring-2 ring-[#FFD6BA]' : 'border-stone-200 hover:scale-105'
-                    }`}
-                    style={{ backgroundColor: color.hex }}
-                    title={color.name}
-                  >
-                    {selectedColor.name === color.name && (
-                      <Check className={`w-4 h-4 ${['#FFFCE1', '#FFDDB0', '#FFF2EB', '#FFDCDC'].includes(color.hex) ? 'text-[#4A2B20]' : 'text-white'}`} />
-                    )}
-                  </button>
-                ))}
-              </div>
+          {/* Color Selector */}
+          <div className="space-y-3 pt-2 border-t border-[#FFE8CD]">
+            <div className="flex justify-between text-xs">
+              <span className="font-bold uppercase tracking-wider text-[#4A2B20]">Select Royal Shade</span>
+              <span className="font-semibold text-stone-600">{selectedColor.name}</span>
             </div>
-          )}
-
-          {/* Add to Bag CTA */}
-          <div className="space-y-4 pt-2">
-            {product.isOutOfStock ? (
-              <div className="p-4 bg-rose-50 border border-rose-200 text-rose-800 text-sm font-bold rounded-2xl text-center">
-                This article is currently Out of Stock. Please check back soon or contact concierge.
-              </div>
-            ) : (
-              <div className="flex gap-4 items-center">
-                <div className="flex items-center border border-[#FFE8CD] rounded-xl bg-white">
+            <div className="flex gap-3">
+              {product.colors.map((color) => {
+                const isSelected = selectedColor.name === color.name;
+                return (
                   <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-3.5 py-2 text-stone-600 hover:bg-[#FFE8CD] rounded-l-xl font-bold"
+                    key={color.name}
+                    onClick={() => handleColorSelect(color)}
+                    className={`group relative p-1 rounded-full transition ${
+                      isSelected ? 'ring-2 ring-[#4A2B20] ring-offset-2 scale-110' : 'hover:scale-105'
+                    }`}
                   >
-                    -
+                    <span
+                      className="block w-8 h-8 rounded-full border border-stone-300 shadow-inner"
+                      style={{ backgroundColor: color.hex }}
+                    />
                   </button>
-                  <span className="px-4 text-sm font-bold text-[#4A2B20]">{quantity}</span>
-                  <button
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="px-3.5 py-2 text-stone-600 hover:bg-[#FFE8CD] rounded-r-xl font-bold"
-                  >
-                    +
-                  </button>
-                </div>
+                );
+              })}
+            </div>
+          </div>
 
+          {/* Quantity & CTA */}
+          <div className="space-y-4 pt-4 border-t border-[#FFE8CD]">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center border border-[#FFE8CD] rounded-2xl bg-white p-1">
                 <button
-                  onClick={handleAddToCart}
-                  className="flex-1 py-3.5 bg-[#FFD6BA] text-[#4A2B20] font-bold text-sm rounded-xl hover:bg-[#FFE8CD] transition shadow-lg flex items-center justify-center gap-2 border border-[#FFE8CD]"
+                  type="button"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="w-10 h-10 flex items-center justify-center text-lg font-bold text-[#4A2B20] hover:bg-[#FFE8CD] rounded-xl transition"
                 >
-                  <ShoppingBag className="w-5 h-5" /> Add to Bag ({selectedColor.name})
+                  -
+                </button>
+                <span className="w-12 text-center text-sm font-bold text-[#4A2B20]">{quantity}</span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="w-10 h-10 flex items-center justify-center text-lg font-bold text-[#4A2B20] hover:bg-[#FFE8CD] rounded-xl transition"
+                >
+                  +
                 </button>
               </div>
-            )}
 
-            {addedToast && (
-              <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold rounded-xl flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-600" /> Added {quantity} item(s) in {selectedColor.name} to your shopping bag!
-              </div>
-            )}
-          </div>
-
-          {/* Specifications Grid */}
-          <div className="bg-white rounded-2xl p-5 border border-[#FFE8CD] space-y-3 shadow-sm">
-            <h4 className="font-serif text-sm font-bold text-[#4A2B20] flex items-center gap-1.5">
-              <Info className="w-4 h-4 text-[#4A2B20]" /> Article Specifications
-            </h4>
-            <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-xs">
-              <div className="p-2 bg-[#FFF2EB] rounded-lg">
-                <span className="text-stone-500 block">Article Type:</span>
-                <span className="font-bold text-[#4A2B20]">{product.articleType || product.fabric}</span>
-              </div>
-              <div className="p-2 bg-[#FFF2EB] rounded-lg">
-                <span className="text-stone-500 block">Tier Grade:</span>
-                <span className="font-bold text-[#6B3E30]">{product.tierGrade || 'Platinum'} Tier</span>
-              </div>
-              <div className="p-2 bg-[#FFF2EB] rounded-lg">
-                <span className="text-stone-500 block">Dimensions:</span>
-                <span className="font-bold text-[#4A2B20]">{product.dimensions}</span>
-              </div>
-              <div className="p-2 bg-[#FFF2EB] rounded-lg">
-                <span className="text-stone-500 block">Weight:</span>
-                <span className="font-bold text-[#4A2B20]">{product.weight}</span>
-              </div>
+              <button
+                type="button"
+                disabled={product.isOutOfStock}
+                onClick={handleAddToCart}
+                className={`flex-1 py-4 px-6 rounded-2xl font-bold text-sm shadow-md flex items-center justify-center gap-2 transition ${
+                  product.isOutOfStock
+                    ? 'bg-stone-300 text-stone-500 cursor-not-allowed'
+                    : 'bg-[#FFD6BA] text-[#4A2B20] hover:bg-[#FFE8CD] border border-[#FFE8CD]'
+                }`}
+              >
+                <ShoppingBag className="w-4 h-4" />
+                {product.isOutOfStock ? 'Currently Out of Stock' : 'Add to Shopping Bag'}
+              </button>
             </div>
           </div>
 
-          {/* Guarantees */}
-          <div className="space-y-2.5 text-xs text-stone-600">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#4A2B20]" />
-              <span>Certified Handwoven Craftsmanship with Authenticity Guarantee</span>
+          {/* Guarantee Badges */}
+          <div className="grid grid-cols-3 gap-3 p-4 bg-white rounded-2xl border border-[#FFE8CD] text-center text-xs text-[#4A2B20]">
+            <div className="space-y-1">
+              <ShieldCheck className="w-5 h-5 mx-auto text-[#4A2B20]" />
+              <p className="font-bold text-[11px]">100% Authentic</p>
             </div>
-            <div className="flex items-center gap-2">
-              <Truck className="w-4 h-4 text-[#4A2B20]" />
-              <span>Free Express Delivery Nationwide & Cash on Delivery Available</span>
+            <div className="space-y-1">
+              <Truck className="w-5 h-5 mx-auto text-[#4A2B20]" />
+              <p className="font-bold text-[11px]">Express COD</p>
             </div>
-            <div className="flex items-center gap-2">
-              <RefreshCw className="w-4 h-4 text-[#4A2B20]" />
-              <span>7-Day Easy Exchange Guarantee</span>
+            <div className="space-y-1">
+              <RefreshCw className="w-5 h-5 mx-auto text-[#4A2B20]" />
+              <p className="font-bold text-[11px]">7-Day Policy</p>
             </div>
           </div>
 
@@ -283,122 +283,97 @@ export const ProductDetailPage: React.FC = () => {
 
       </div>
 
-      {/* ITEM SOPs SECTION */}
-      <section className="bg-[#FFE8CD]/60 rounded-3xl p-8 sm:p-10 border border-[#FFD6BA] space-y-6 shadow-sm">
-        <div className="max-w-2xl space-y-2">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#4A2B20] flex items-center gap-1.5">
-            <FileText className="w-4 h-4" /> Item Standard Operating Procedures (SOPs)
-          </span>
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#4A2B20]">
-            Care, Storage & Authenticity Protocol
-          </h2>
+      {/* EXAGGERATED ROYAL SOPS & CRAFT PROTOCOLS SECTION */}
+      <section className="bg-white rounded-3xl p-6 sm:p-10 border border-[#FFE8CD] shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#FFE8CD]">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-widest text-[#6B3E30] flex items-center gap-1.5">
+              <Award className="w-4 h-4 text-[#4A2B20]" /> Master Loom Protocols
+            </span>
+            <h3 className="font-serif text-2xl font-bold text-[#4A2B20] mt-1">
+              Exaggerated Heirloom Care & Authenticity SOPs
+            </h3>
+          </div>
+
+          {/* SOP Tabs */}
+          <div className="flex flex-wrap gap-2">
+            {sopTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveSopTab(tab.id as any)}
+                className={`px-4 py-2 rounded-2xl text-xs font-bold transition ${
+                  activeSopTab === tab.id
+                    ? 'bg-[#4A2B20] text-[#FFE8CD] shadow-sm'
+                    : 'bg-[#FFF2EB] text-[#4A2B20] hover:bg-[#FFE8CD]'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Tabbed SOP Controls */}
-        <div className="flex flex-wrap gap-2 border-b border-[#FFD6BA] pb-4">
-          {sopTabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveSopTab(tab.id as any)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition ${
-                activeSopTab === tab.id
-                  ? 'bg-[#FFD6BA] text-[#4A2B20] shadow-sm'
-                  : 'bg-white text-[#4A2B20] hover:bg-[#FFE8CD] border border-[#FFE8CD]'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        {/* Tab Content */}
+        <div className="bg-[#FFF2EB]/50 p-6 rounded-2xl border border-[#FFE8CD]">
+          <ul className="space-y-3">
+            {(product.sops?.[activeSopTab] || []).map((sopItem, idx) => (
+              <li key={idx} className="flex items-start gap-3 text-xs sm:text-sm text-[#4A2B20] font-medium leading-relaxed">
+                <span className="p-1 bg-[#FFD6BA] text-[#4A2B20] rounded-full mt-0.5 flex-shrink-0">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                </span>
+                <span>{sopItem}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-
-        {/* SOP Content display */}
-        <div className="bg-white p-6 rounded-2xl border border-[#FFE8CD] shadow-sm min-h-[150px]">
-          {activeSopTab === 'washing' && (
-            <div className="space-y-3">
-              <h4 className="font-serif text-base font-bold text-[#4A2B20] flex items-center gap-2">
-                <Feather className="w-4 h-4 text-[#4A2B20]" /> Washing & Cleaning SOPs
-              </h4>
-              <ul className="space-y-2 text-xs text-stone-700">
-                {product.sops.washing.map((step, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="w-5 h-5 rounded-full bg-[#FFD6BA] text-[#4A2B20] font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
-                      {idx + 1}
-                    </span>
-                    <span>{step}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {activeSopTab === 'storage' && (
-            <div className="space-y-3">
-              <h4 className="font-serif text-base font-bold text-[#4A2B20] flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-[#4A2B20]" /> Storage & Preservation SOPs
-              </h4>
-              <ul className="space-y-2 text-xs text-stone-700">
-                {product.sops.storage.map((step, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="w-5 h-5 rounded-full bg-[#FFE8CD] text-[#4A2B20] font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
-                      {idx + 1}
-                    </span>
-                    <span>{step}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {activeSopTab === 'steaming' && (
-            <div className="space-y-3">
-              <h4 className="font-serif text-base font-bold text-[#4A2B20] flex items-center gap-2">
-                <RefreshCw className="w-4 h-4 text-[#4A2B20]" /> Steaming SOPs
-              </h4>
-              <ul className="space-y-2 text-xs text-stone-700">
-                {product.sops.steaming.map((step, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="w-5 h-5 rounded-full bg-[#FFDCDC] text-[#4A2B20] font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
-                      {idx + 1}
-                    </span>
-                    <span>{step}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {activeSopTab === 'authenticity' && (
-            <div className="space-y-3">
-              <h4 className="font-serif text-base font-bold text-[#4A2B20] flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#4A2B20]" /> Authenticity Verification SOPs
-              </h4>
-              <ul className="space-y-2 text-xs text-stone-700">
-                {product.sops.authenticity.map((step, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="w-5 h-5 rounded-full bg-[#FFD6BA] text-[#4A2B20] font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
-                      {idx + 1}
-                    </span>
-                    <span>{step}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-
       </section>
 
-      {/* Related Shawls Grid */}
+      {/* RELATED MASTERPIECES */}
       {relatedProducts.length > 0 && (
-        <div className="pt-8 border-t border-[#FFE8CD]">
-          <h3 className="font-serif text-2xl font-bold text-[#4A2B20] mb-8">You May Also Admire</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <section className="space-y-6">
+          <div className="text-center space-y-2">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#6B3E30]">Companions of Same Tier</span>
+            <h3 className="font-serif text-2xl font-bold text-[#4A2B20]">Related Masterpieces</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {relatedProducts.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
-        </div>
+        </section>
       )}
+
+      {/* FULLSCREEN MOBILE ZOOM MODAL */}
+      <AnimatePresence>
+        {mobileZoomModalOpen && (
+          <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col justify-between p-4">
+            <div className="flex justify-between items-center text-white pb-2 border-b border-white/20">
+              <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <ZoomIn className="w-4 h-4 text-[#FFD6BA]" /> High-Res Micro-Weave Inspector
+              </span>
+              <button
+                type="button"
+                onClick={() => setMobileZoomModalOpen(false)}
+                className="p-2 text-white bg-white/10 rounded-full"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="flex-1 flex items-center justify-center overflow-auto py-4">
+              <img
+                src={selectedImage}
+                alt={product.title}
+                className="max-w-none w-[180vw] h-auto object-contain rounded-2xl shadow-2xl"
+              />
+            </div>
+
+            <div className="text-center text-stone-300 text-xs py-2 bg-black/40 rounded-xl">
+              Drag & scroll across image to inspect fine Ladakhi handloom warp & weft threads.
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

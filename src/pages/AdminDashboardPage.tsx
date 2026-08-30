@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShieldCheck, Printer, Eye, LogOut, Search, Truck, Building2, Plus, Edit, Trash2, MapPin, Sparkles, Package } from 'lucide-react';
+import { ShieldCheck, Printer, LogOut, Search, Truck, Building2, Plus, Edit, Trash2, Sparkles, Package, Mail } from 'lucide-react';
 import { useOrders } from '../context/OrderContext';
 import { useProducts } from '../context/ProductContext';
 import { useAuth } from '../context/AuthContext';
@@ -8,16 +8,18 @@ import { Order, OrderStatus } from '../types/order';
 import { ShawlProduct } from '../types/product';
 import { OrderReceiptModal } from '../components/admin/OrderReceiptModal';
 import { ProductManagementModal } from '../components/admin/ProductManagementModal';
+import { ShareEmailInvoiceModal } from '../components/admin/ShareEmailInvoiceModal';
 import { CartToast } from '../components/cart/CartToast';
 
 export const AdminDashboardPage: React.FC = () => {
-  const { orders, isAdminAuthenticated, logoutAdmin, updateOrderStatus, updateParcelLocation } = useOrders();
+  const { orders, isAdminAuthenticated, logoutAdmin, updateOrderStatus, assignCourierTracking } = useOrders();
   const { user, isAdmin, logout } = useAuth();
   const { products, deleteProduct, toggleOutOfStock } = useProducts();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<'orders' | 'products'>('orders');
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedOrderForReceipt, setSelectedOrderForReceipt] = useState<Order | null>(null);
+  const [selectedOrderForEmail, setSelectedOrderForEmail] = useState<Order | null>(null);
   const [filterPayment, setFilterPayment] = useState<'ALL' | 'COD' | 'BANK_TRANSFER'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -25,9 +27,10 @@ export const AdminDashboardPage: React.FC = () => {
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<ShawlProduct | null>(null);
 
-  // Parcel Location Editing State
-  const [editingLocationId, setEditingLocationId] = useState<string | null>(null);
-  const [locationText, setLocationText] = useState('');
+  // Parcel Location & Courier Tracking Editing State
+  const [editingTrackingOrderId, setEditingTrackingOrderId] = useState<string | null>(null);
+  const [courierTrackingInput, setCourierTrackingInput] = useState('');
+  const [courierPartnerInput, setCourierPartnerInput] = useState('TCS Express');
 
   const hasAdminAccess = isAdmin || isAdminAuthenticated || user?.role === 'admin';
 
@@ -65,11 +68,11 @@ export const AdminDashboardPage: React.FC = () => {
   const codOrdersCount = orders.filter((o) => o.paymentMethod === 'COD').length;
   const bankTransferCount = orders.filter((o) => o.paymentMethod === 'BANK_TRANSFER').length;
 
-  const handleSaveParcelLocation = (orderId: string) => {
-    if (locationText.trim()) {
-      updateParcelLocation(orderId, locationText.trim());
-      setEditingLocationId(null);
-      setLocationText('');
+  const handleSaveCourierTracking = (orderId: string) => {
+    if (courierTrackingInput.trim()) {
+      assignCourierTracking(orderId, courierTrackingInput.trim(), courierPartnerInput);
+      setEditingTrackingOrderId(null);
+      setCourierTrackingInput('');
     }
   };
 
@@ -88,16 +91,16 @@ export const AdminDashboardPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                logout();
-                logoutAdmin();
-                navigate('/login');
-              }}
-              className="px-4 py-2 bg-rose-50 text-rose-700 font-bold rounded-2xl hover:bg-rose-100 border border-rose-200 transition flex items-center gap-1.5 text-xs shadow-sm"
-            >
-              <LogOut className="w-4 h-4" /> Sign Out
-            </button>
+          <button
+            onClick={() => {
+              logout();
+              logoutAdmin();
+              navigate('/login');
+            }}
+            className="px-4 py-2 bg-rose-50 text-rose-700 font-bold rounded-2xl hover:bg-rose-100 border border-rose-200 transition flex items-center gap-1.5 text-xs shadow-sm"
+          >
+            <LogOut className="w-4 h-4" /> Sign Out
+          </button>
         </div>
       </div>
 
@@ -206,7 +209,7 @@ export const AdminDashboardPage: React.FC = () => {
                     <th className="p-3">Payment</th>
                     <th className="p-3">Amount</th>
                     <th className="p-3">Status</th>
-                    <th className="p-3">Parcel Location Update</th>
+                    <th className="p-3">Courier Tracking ID</th>
                     <th className="p-3 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -253,56 +256,91 @@ export const AdminDashboardPage: React.FC = () => {
                           </select>
                         </td>
                         
+                        {/* Courier Tracking ID Column with Inline Editor */}
                         <td className="p-3 min-w-[220px]">
-                          {editingLocationId === ord.id ? (
-                            <div className="flex gap-1">
-                              <input
-                                type="text"
-                                value={locationText}
-                                onChange={(e) => setLocationText(e.target.value)}
-                                placeholder="e.g. In Transit: Lahore Sorting Hub"
-                                className="w-full px-2 py-1 border border-[#FFD6BA] rounded text-[11px]"
-                              />
-                              <button
-                                onClick={() => handleSaveParcelLocation(ord.id)}
-                                className="px-2 py-1 bg-[#FFD6BA] text-[#4A2B20] rounded text-[10px] font-bold"
-                              >
-                                Save
-                              </button>
+                          {editingTrackingOrderId === ord.id ? (
+                            <div className="space-y-1.5 bg-[#FFF2EB] p-2 rounded-xl border border-[#FFD6BA]">
+                              <div className="flex gap-1">
+                                <select
+                                  value={courierPartnerInput}
+                                  onChange={(e) => setCourierPartnerInput(e.target.value)}
+                                  className="text-[10px] bg-white border border-[#FFD6BA] rounded px-1 py-1"
+                                >
+                                  <option value="TCS Express">TCS Express</option>
+                                  <option value="Leopards Courier">Leopards</option>
+                                  <option value="Trax Logistics">Trax</option>
+                                  <option value="M&P Express">M&P</option>
+                                </select>
+                                <input
+                                  type="text"
+                                  value={courierTrackingInput}
+                                  onChange={(e) => setCourierTrackingInput(e.target.value)}
+                                  placeholder="e.g. TCS-9984120"
+                                  className="w-full px-2 py-1 border border-[#FFD6BA] rounded text-[11px]"
+                                />
+                              </div>
+                              <div className="flex justify-end gap-1">
+                                <button
+                                  onClick={() => setEditingTrackingOrderId(null)}
+                                  className="px-2 py-0.5 text-[10px] text-stone-500"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={() => handleSaveCourierTracking(ord.id)}
+                                  className="px-2.5 py-1 bg-[#FFD6BA] text-[#4A2B20] rounded text-[10px] font-bold"
+                                >
+                                  Confirm & Dispatch
+                                </button>
+                              </div>
                             </div>
                           ) : (
-                            <div className="flex items-center justify-between text-[11px] bg-[#FFF2EB] p-2 rounded-lg border border-[#FFE8CD]">
-                              <span className="text-stone-700 truncate max-w-[170px]" title={ord.currentLocation || 'Order Logged'}>
-                                <MapPin className="w-3 h-3 text-[#4A2B20] inline mr-1" />
-                                {ord.currentLocation || 'Order Logged — Workshop Hub'}
-                              </span>
+                            <div className="flex items-center justify-between text-[11px] bg-[#FFF2EB] p-2 rounded-xl border border-[#FFE8CD]">
+                              <div>
+                                {ord.courierTrackingId ? (
+                                  <div>
+                                    <span className="font-mono font-bold text-[#4A2B20] block">
+                                      {ord.courierTrackingId}
+                                    </span>
+                                    <span className="text-[10px] text-stone-500">{ord.courierPartner || 'TCS Express'}</span>
+                                  </div>
+                                ) : (
+                                  <span className="text-stone-400 italic text-[10px]">No Tracking Assigned</span>
+                                )}
+                              </div>
                               <button
                                 onClick={() => {
-                                  setEditingLocationId(ord.id);
-                                  setLocationText(ord.currentLocation || '');
+                                  setEditingTrackingOrderId(ord.id);
+                                  setCourierTrackingInput(ord.courierTrackingId || '');
+                                  setCourierPartnerInput(ord.courierPartner || 'TCS Express');
                                 }}
-                                className="text-[10px] text-[#4A2B20] font-bold underline ml-1"
+                                className="text-[10px] text-[#4A2B20] font-bold underline ml-2 hover:text-[#6B3E30]"
                               >
-                                Edit
+                                {ord.courierTrackingId ? 'Edit' : '+ Add ID'}
                               </button>
                             </div>
                           )}
                         </td>
 
+                        {/* Action Buttons: Share on Mail + View Receipt */}
                         <td className="p-3 text-right">
                           <div className="flex items-center justify-end gap-1.5">
+                            {/* Share on Mail Button */}
                             <button
-                              onClick={() => setSelectedOrder(ord)}
-                              className="px-2.5 py-1 bg-white border border-[#FFE8CD] text-[#4A2B20] hover:bg-[#FFD6BA] font-bold text-[11px] rounded-lg transition"
+                              onClick={() => setSelectedOrderForEmail(ord)}
+                              title="Share invoice with customer via email"
+                              className="px-2.5 py-1.5 bg-[#FFD6BA] hover:bg-[#FFE8CD] text-[#4A2B20] font-bold text-[11px] rounded-lg transition flex items-center gap-1 shadow-sm border border-[#FFE8CD]"
                             >
-                              <Eye className="w-3.5 h-3.5 inline mr-1" /> Receipt
+                              <Mail className="w-3.5 h-3.5" /> Share on Mail
                             </button>
+
+                            {/* Internal Receipt Print */}
                             <button
-                              onClick={() => setSelectedOrder(ord)}
-                              className="p-1.5 bg-[#FFD6BA] text-[#4A2B20] hover:bg-[#FFE8CD] rounded-lg transition"
-                              title="Print Receipt"
+                              onClick={() => setSelectedOrderForReceipt(ord)}
+                              title="View & Print Official Packaging Receipt"
+                              className="px-2.5 py-1.5 bg-white border border-[#FFE8CD] text-[#4A2B20] hover:bg-[#FFE8CD] font-bold text-[11px] rounded-lg transition flex items-center gap-1"
                             >
-                              <Printer className="w-3.5 h-3.5" />
+                              <Printer className="w-3.5 h-3.5" /> Print
                             </button>
                           </div>
                         </td>
@@ -316,108 +354,131 @@ export const AdminDashboardPage: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 2: PRODUCT CRUD & STOCK MANAGEMENT */}
+      {/* TAB 2: PRODUCTS CATALOG & STOCK MANAGER */}
       {activeTab === 'products' && (
-        <div className="space-y-6 bg-white p-6 sm:p-8 rounded-3xl border border-[#FFE8CD] shadow-sm">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#FFE8CD] pb-4">
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl border border-[#FFE8CD] shadow-sm">
             <div>
-              <h3 className="font-serif text-xl font-bold text-[#4A2B20]">WADIY-E-PASHAM Shawls & Stock Manager</h3>
-              <p className="text-xs text-stone-500">Add new articles, edit prices, apply discounts, and toggle Out of Stock status.</p>
+              <h3 className="font-serif text-lg sm:text-xl font-bold text-[#4A2B20]">Articles & Stock Catalog</h3>
+              <p className="text-xs text-stone-600">Add new shawls, adjust discounts, or toggle out of stock states.</p>
             </div>
-
             <button
               onClick={() => {
                 setEditingProduct(null);
                 setProductModalOpen(true);
               }}
-              className="px-5 py-2.5 bg-[#FFD6BA] text-[#4A2B20] font-bold text-xs rounded-xl hover:bg-[#FFE8CD] transition shadow flex items-center gap-1.5 border border-[#FFE8CD]"
+              className="px-4 py-2.5 bg-[#FFD6BA] text-[#4A2B20] font-bold text-xs rounded-2xl hover:bg-[#FFE8CD] transition flex items-center gap-1.5 shadow border border-[#FFE8CD]"
             >
               <Plus className="w-4 h-4" /> Add New Shawl Article
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product) => (
-              <div key={product.id} className="border border-[#FFE8CD] rounded-2xl p-4 bg-[#FFF2EB] flex flex-col justify-between space-y-4">
-                <div className="flex gap-3">
-                  <img src={product.images[0]} alt={product.title} className="w-20 h-24 object-cover rounded-xl border border-stone-200" />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start">
-                      <span className="text-[10px] font-bold text-[#6B3E30] uppercase tracking-wider block">{product.subCategory}</span>
-                      <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-[#FFD6BA] text-[#4A2B20]">{product.tierGrade || 'Platinum'}</span>
-                    </div>
-
-                    <h4 className="font-serif font-bold text-sm text-[#4A2B20] truncate mt-0.5">{product.title}</h4>
-                    <p className="text-[11px] text-stone-500 line-clamp-1">{product.articleType || product.fabric}</p>
-                    
-                    <div className="mt-2 flex items-baseline gap-2">
-                      <span className="font-serif text-base font-bold text-[#4A2B20]">
-                        PKR {product.price.toLocaleString()}
-                      </span>
-                      {product.compareAtPrice && (
-                        <span className="text-xs text-stone-400 line-through">
-                          PKR {product.compareAtPrice.toLocaleString()}
+          {/* Products List Table */}
+          <div className="bg-white rounded-3xl border border-[#FFE8CD] shadow-sm overflow-hidden p-6">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-[#FFE8CD] text-stone-500 font-bold uppercase tracking-wider bg-[#FFF2EB]">
+                    <th className="p-3">Article</th>
+                    <th className="p-3">Tier</th>
+                    <th className="p-3">Price</th>
+                    <th className="p-3">Discount / Sale</th>
+                    <th className="p-3">Stock Status</th>
+                    <th className="p-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-100">
+                  {products.map((p) => (
+                    <tr key={p.id} className="hover:bg-[#FFF2EB]/50 transition">
+                      <td className="p-3 flex items-center gap-3">
+                        <img
+                          src={p.images[0]}
+                          alt={p.title}
+                          className="w-12 h-14 object-cover rounded-lg border border-stone-200"
+                        />
+                        <div>
+                          <div className="font-bold text-[#4A2B20] text-sm">{p.title}</div>
+                          <span className="text-[10px] text-stone-500">{p.fabric}</span>
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <span className="font-bold text-[10px] bg-[#FFE8CD] text-[#4A2B20] px-2 py-0.5 rounded-full border border-[#FFD6BA]">
+                          {p.tierGrade} Tier
                         </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Stock Toggle & Edit Actions */}
-                <div className="pt-3 border-t border-[#FFE8CD] space-y-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-stone-600 font-medium">Stock Status:</span>
-                    <button
-                      onClick={() => toggleOutOfStock(product.id)}
-                      className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition ${
-                        product.isOutOfStock ? 'bg-rose-100 text-rose-800 border border-rose-300' : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                      }`}
-                    >
-                      {product.isOutOfStock ? 'Out of Stock' : 'In Stock'}
-                    </button>
-                  </div>
-
-                  <div className="flex justify-between items-center pt-1">
-                    <button
-                      onClick={() => {
-                        setEditingProduct(product);
-                        setProductModalOpen(true);
-                      }}
-                      className="px-3 py-1.5 bg-white border border-[#FFE8CD] text-[#4A2B20] font-bold text-xs rounded-lg hover:bg-[#FFD6BA] transition flex items-center gap-1 shadow-sm"
-                    >
-                      <Edit className="w-3.5 h-3.5" /> Edit Article
-                    </button>
-
-                    <button
-                      onClick={() => deleteProduct(product.id)}
-                      className="p-1.5 text-stone-400 hover:text-rose-600 transition"
-                      title="Delete article"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-
-              </div>
-            ))}
+                      </td>
+                      <td className="p-3 font-bold text-[#4A2B20]">
+                        PKR {p.price.toLocaleString()}
+                      </td>
+                      <td className="p-3">
+                        {p.compareAtPrice ? (
+                          <span className="text-emerald-700 font-bold text-[11px]">
+                            On Sale (Reg. PKR {p.compareAtPrice.toLocaleString()})
+                          </span>
+                        ) : (
+                          <span className="text-stone-400 text-[11px]">Standard Price</span>
+                        )}
+                      </td>
+                      <td className="p-3">
+                        <button
+                          onClick={() => toggleOutOfStock(p.id)}
+                          className={`px-3 py-1 rounded-full text-[10px] font-bold transition ${
+                            p.isOutOfStock
+                              ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                              : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          }`}
+                        >
+                          {p.isOutOfStock ? '● Out of Stock' : '● In Stock'}
+                        </button>
+                      </td>
+                      <td className="p-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingProduct(p);
+                              setProductModalOpen(true);
+                            }}
+                            className="p-1.5 bg-[#FFF2EB] text-[#4A2B20] hover:bg-[#FFE8CD] rounded-lg transition"
+                            title="Edit Shawl & Discount"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (confirm(`Are you sure you want to delete "${p.title}"?`)) {
+                                deleteProduct(p.id);
+                              }
+                            }}
+                            className="p-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 rounded-lg transition"
+                            title="Delete Article"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Product Management Modal */}
-      <ProductManagementModal
-        productToEdit={editingProduct}
-        isOpen={productModalOpen}
-        onClose={() => {
-          setProductModalOpen(false);
-          setEditingProduct(null);
-        }}
+      {/* MODALS */}
+      <OrderReceiptModal
+        order={selectedOrderForReceipt}
+        onClose={() => setSelectedOrderForReceipt(null)}
       />
 
-      {/* Printable Receipt Modal */}
-      <OrderReceiptModal
-        order={selectedOrder}
-        onClose={() => setSelectedOrder(null)}
+      <ShareEmailInvoiceModal
+        order={selectedOrderForEmail}
+        onClose={() => setSelectedOrderForEmail(null)}
+      />
+
+      <ProductManagementModal
+        isOpen={productModalOpen}
+        onClose={() => setProductModalOpen(false)}
+        productToEdit={editingProduct}
       />
 
     </div>

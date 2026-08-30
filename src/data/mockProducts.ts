@@ -7,20 +7,46 @@ const AUTHENTIC_SHAWL_FALLBACKS = [
   'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?auto=format&fit=crop&w=1200&q=80',
 ];
 
+// Rich Exaggerated Royal SOPs for all Masterpiece Shawls
+const ROYAL_KASHMIR_SOPS = {
+  washing: [
+    'Dry Clean Only by certified Kashmiri cashmere conservationists.',
+    'Strictly avoid washing machines, centrifugal spin cycles, or vigorous hand wringing.',
+    'If spot cleansing, strictly use pH-neutral organic sweet almond surfactant in pure cold glacial temperature water (below 18°C).',
+    'Blot gently between raw Egyptian cotton towels and dry flat in shaded alpine micro-breeze.'
+  ],
+  storage: [
+    'Encase in pure unbleached breathable muslin cloth and store flat inside the bespoke lacquered Kashmiri walnut keepsake chest.',
+    'Include organic red cedar bark chips and wild Himalayan dried lavender sachets to protect natural 12-micron keratin fibers.',
+    'Never use synthetic plastic or vacuum compression bags—authentic Ladakhi cashmere requires continuous micro-airflow.',
+    'Rest the shawl for 48 hours between wearings to allow the natural crimp memory of the fleece to recover its airy loft.'
+  ],
+  steaming: [
+    'Never apply a hot iron plate directly onto the delicate handloom weave.',
+    'Hover an ionic low-temperature vertical garment steamer at a 6-inch distance to revive the natural loft and silky drape.',
+    'Allow the garment to cool completely on a padded silk hanger before wearing.'
+  ],
+  authenticity: [
+    'Passed the legendary Kashmir Ring Test—entire 2-meter doshala glides effortlessly through an authentic royal signet ring.',
+    'Individually inspected and lab-verified for 12.0–13.5 micron Ladakhi Changthangi underfleece purity.',
+    'Accompanied by a government-certified laboratory purity hallmark and laser-etched serial hologram of authenticity.'
+  ]
+};
+
 export const MOCK_PRODUCTS: ShawlProduct[] = [
-  // 1. Pure Pashmina - Wool Pure Single (Diamond Tier)
+  // 1. Diamond Tier
   {
     id: 'shawl-01',
     handle: 'royal-pashmina-rose-gold',
     title: 'Royal Ladakhi Pure Wool Stole',
-    subtitle: 'Hand-combed 12-Micron Wool',
+    subtitle: 'Hand-combed 12-Micron Changthangi Wool',
     description: 'Masterwork handwoven from pure Ladakhi wool. Ultra-soft featherlight drape for regal occasions.',
     price: 34500,
     compareAtPrice: 39000,
     tierGrade: 'Diamond',
     articleType: 'Wool Pure Single',
     subCategory: 'Pashmina',
-    fabric: 'Wool Pure Single',
+    fabric: 'Pure Ladakhi Cashmere',
     dimensions: '100 cm x 200 cm',
     weight: '165 grams',
     micronCount: '12.0 Microns',
@@ -35,20 +61,15 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       { name: 'Warm Cream', hex: '#FFDDB0' },
       { name: 'Rose Blush', hex: '#FFDCDC' }
     ],
-    tags: ['Pure Pashmina', 'Diamond Tier', 'Wool Pure Single'],
-    sops: {
-      washing: ['Dry Clean Only recommended for fiber preservation.'],
-      storage: ['Store in cotton bags provided with cedar balls.'],
-      steaming: ['Use low-temperature garment steamer.'],
-      authenticity: ['Passes Kashmir quality inspection.']
-    },
+    tags: ['Diamond Tier', 'Pure Pashmina'],
+    sops: ROYAL_KASHMIR_SOPS,
     isFeatured: true,
     isBestseller: true,
     isNewArrival: true,
     isOutOfStock: false,
   },
 
-  // 2. Kani Tapestry - Wool 96 Pure Double (Platinum Tier)
+  // 2. Platinum Tier
   {
     id: 'shawl-02',
     handle: 'imperial-kani-tapestry-wrap',
@@ -60,7 +81,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Platinum',
     articleType: 'Wool 96 Pure double',
     subCategory: 'Kani',
-    fabric: 'Wool 96 Pure double',
+    fabric: 'Kani Handloom Cashmere',
     dimensions: '115 cm x 230 cm',
     weight: '240 grams',
     micronCount: '13.5 Microns',
@@ -74,20 +95,15 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       { name: 'Imperial Mahogany', hex: '#4A2B20' },
       { name: 'Warm Amber', hex: '#FFD6BA' }
     ],
-    tags: ['Kani Weave', 'Platinum Tier', 'Wool 96 Pure double'],
-    sops: {
-      washing: ['Professional Dry Clean Only.'],
-      storage: ['Keep wrapped in soft muslin cloth.'],
-      steaming: ['Steam gently on reverse side only.'],
-      authenticity: ['Certified Kashmir Mark.']
-    },
+    tags: ['Platinum Tier', 'Kani Weave'],
+    sops: ROYAL_KASHMIR_SOPS,
     isFeatured: true,
     isBestseller: true,
     isNewArrival: false,
     isOutOfStock: false,
   },
 
-  // 3. Heirloom - Wool Pure Double (Imperial Tier)
+  // 3. Imperial Tier
   {
     id: 'shawl-03',
     handle: 'jamawar-gold-paisley-doshala',
@@ -98,7 +114,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Imperial',
     articleType: 'Wool Pure double',
     subCategory: 'Heirloom',
-    fabric: 'Wool Pure double',
+    fabric: 'Pure Double-Weave Wool',
     dimensions: '115 cm x 230 cm',
     weight: '290 grams',
     micronCount: '14.0 Microns',
@@ -112,20 +128,15 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       { name: 'Antique Gold', hex: '#D4AF37' },
       { name: 'Mahogany Brown', hex: '#4A2B20' }
     ],
-    tags: ['Heirloom', 'Imperial Tier', 'Wool Pure double'],
-    sops: {
-      washing: ['Dry Clean Only.'],
-      storage: ['Store flat with acid-free tissue paper.'],
-      steaming: ['Do not apply direct iron.'],
-      authenticity: ['Certified Handloom Seal.']
-    },
+    tags: ['Imperial Tier', 'Heirloom Brocade'],
+    sops: ROYAL_KASHMIR_SOPS,
     isFeatured: true,
     isBestseller: false,
     isNewArrival: true,
     isOutOfStock: false,
   },
 
-  // 4. Cashmere - Wool 80-20 Single (Gold Tier)
+  // 4. Gold Tier
   {
     id: 'shawl-04',
     handle: 'cashmere-80-20-single-stole',
@@ -137,7 +148,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Gold',
     articleType: 'Wool 80-20 single',
     subCategory: 'Cashmere',
-    fabric: 'Wool 80-20 single',
+    fabric: '80/20 Cashmere Blend',
     dimensions: '100 cm x 200 cm',
     weight: '175 grams',
     micronCount: '14.5 Microns',
@@ -150,20 +161,15 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       { name: 'Porcelain Cream', hex: '#FFF2EB' },
       { name: 'Soft Blush', hex: '#FFDCDC' }
     ],
-    tags: ['Cashmere', 'Gold Tier', 'Wool 80-20 single'],
-    sops: {
-      washing: ['Hand wash gently or Dry Clean.'],
-      storage: ['Fold neatly in cotton bag.'],
-      steaming: ['Light steam garment.'],
-      authenticity: ['Guaranteed Cashmere Blend.']
-    },
+    tags: ['Gold Tier', 'Cashmere'],
+    sops: ROYAL_KASHMIR_SOPS,
     isFeatured: false,
     isBestseller: true,
     isNewArrival: true,
     isOutOfStock: false,
   },
 
-  // 5. Cashmere - Wool 50-50 Single (Gold Tier)
+  // 5. Gold Tier
   {
     id: 'shawl-05',
     handle: 'wool-50-50-single-wrap',
@@ -174,7 +180,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Gold',
     articleType: 'Wool 50-50 single',
     subCategory: 'Cashmere',
-    fabric: 'Wool 50-50 single',
+    fabric: 'Wool 50-50 Blend',
     dimensions: '100 cm x 200 cm',
     weight: '190 grams',
     micronCount: '16.0 Microns',
@@ -184,12 +190,12 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       AUTHENTIC_SHAWL_FALLBACKS[1]
     ],
     colors: [{ name: 'Warm Amber', hex: '#FFD6BA' }],
-    tags: ['Wool 50-50 single', 'Gold Tier'],
-    sops: { washing: ['Dry clean'], storage: ['Fold flat'], steaming: ['Low steam'], authenticity: ['Certified'] },
+    tags: ['Gold Tier', 'Wool Blend'],
+    sops: ROYAL_KASHMIR_SOPS,
     isNewArrival: true,
   },
 
-  // 6. Pashmina - Wool 60-40 Single (Gold Tier)
+  // 6. Gold Tier
   {
     id: 'shawl-06',
     handle: 'wool-60-40-single-stole',
@@ -200,7 +206,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Gold',
     articleType: 'Wool 60-40 single',
     subCategory: 'Pashmina',
-    fabric: 'Wool 60-40 single',
+    fabric: 'Wool 60-40 Blend',
     dimensions: '100 cm x 200 cm',
     weight: '180 grams',
     micronCount: '15.5 Microns',
@@ -210,12 +216,12 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       AUTHENTIC_SHAWL_FALLBACKS[2]
     ],
     colors: [{ name: 'Peach Soft', hex: '#FFE8CD' }],
-    tags: ['Wool 60-40 single', 'Gold Tier'],
-    sops: { washing: ['Dry clean'], storage: ['Fold flat'], steaming: ['Low steam'], authenticity: ['Certified'] },
+    tags: ['Gold Tier', 'Pashmina Blend'],
+    sops: ROYAL_KASHMIR_SOPS,
     isNewArrival: false,
   },
 
-  // 7. Pashmina - Wool 70-30 Single (Platinum Tier)
+  // 7. Platinum Tier
   {
     id: 'shawl-07',
     handle: 'wool-70-30-single-doshala',
@@ -226,7 +232,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Platinum',
     articleType: 'Wool 70-30 single',
     subCategory: 'Pashmina',
-    fabric: 'Wool 70-30 single',
+    fabric: '70% Pure Ladakhi Wool',
     dimensions: '105 cm x 210 cm',
     weight: '185 grams',
     micronCount: '15.0 Microns',
@@ -236,12 +242,12 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       AUTHENTIC_SHAWL_FALLBACKS[0]
     ],
     colors: [{ name: 'Rose Blush', hex: '#FFDCDC' }],
-    tags: ['Wool 70-30 single', 'Platinum Tier'],
-    sops: { washing: ['Dry clean'], storage: ['Fold flat'], steaming: ['Low steam'], authenticity: ['Certified'] },
+    tags: ['Platinum Tier', 'Ladakhi Wool'],
+    sops: ROYAL_KASHMIR_SOPS,
     isNewArrival: true,
   },
 
-  // 8. Heirloom - Wool 50-50 Double (Gold Tier)
+  // 8. Gold Tier
   {
     id: 'shawl-08',
     handle: 'wool-50-50-double-shawl',
@@ -252,7 +258,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Gold',
     articleType: 'Wool 50-50 double',
     subCategory: 'Heirloom',
-    fabric: 'Wool 50-50 double',
+    fabric: 'Wool 50-50 Double Weft',
     dimensions: '115 cm x 230 cm',
     weight: '260 grams',
     micronCount: '16.0 Microns',
@@ -262,12 +268,12 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       AUTHENTIC_SHAWL_FALLBACKS[1]
     ],
     colors: [{ name: 'Mocha Brown', hex: '#4A2B20' }],
-    tags: ['Wool 50-50 double', 'Gold Tier'],
-    sops: { washing: ['Dry clean'], storage: ['Fold flat'], steaming: ['Low steam'], authenticity: ['Certified'] },
+    tags: ['Gold Tier', 'Double Weave'],
+    sops: ROYAL_KASHMIR_SOPS,
     isNewArrival: false,
   },
 
-  // 9. Kani - Wool 60-40 Double (Platinum Tier)
+  // 9. Platinum Tier
   {
     id: 'shawl-09',
     handle: 'wool-60-40-double-doshala',
@@ -278,7 +284,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Platinum',
     articleType: 'Wool 60-40 double',
     subCategory: 'Kani',
-    fabric: 'Wool 60-40 double',
+    fabric: '60/40 Reversible Wool',
     dimensions: '110 cm x 220 cm',
     weight: '250 grams',
     micronCount: '15.5 Microns',
@@ -288,12 +294,12 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       AUTHENTIC_SHAWL_FALLBACKS[2]
     ],
     colors: [{ name: 'Warm Amber', hex: '#FFD6BA' }],
-    tags: ['Wool 60-40 double', 'Platinum Tier'],
-    sops: { washing: ['Dry clean'], storage: ['Fold flat'], steaming: ['Low steam'], authenticity: ['Certified'] },
+    tags: ['Platinum Tier', 'Reversible'],
+    sops: ROYAL_KASHMIR_SOPS,
     isNewArrival: true,
   },
 
-  // 10. Heirloom - Wool 70-30 Double (Platinum Tier)
+  // 10. Platinum Tier
   {
     id: 'shawl-10',
     handle: 'wool-70-30-double-shawl',
@@ -304,7 +310,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Platinum',
     articleType: 'Wool 70-30 double',
     subCategory: 'Heirloom',
-    fabric: 'Wool 70-30 double',
+    fabric: '70% Wool Double Weave',
     dimensions: '115 cm x 230 cm',
     weight: '270 grams',
     micronCount: '15.0 Microns',
@@ -314,12 +320,12 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       AUTHENTIC_SHAWL_FALLBACKS[0]
     ],
     colors: [{ name: 'Porcelain Cream', hex: '#FFF2EB' }],
-    tags: ['Wool 70-30 double', 'Platinum Tier'],
-    sops: { washing: ['Dry clean'], storage: ['Fold flat'], steaming: ['Low steam'], authenticity: ['Certified'] },
+    tags: ['Platinum Tier', 'Paisley Border'],
+    sops: ROYAL_KASHMIR_SOPS,
     isNewArrival: false,
   },
 
-  // 11. Cashmere - Wool 80-20 Double (Diamond Tier)
+  // 11. Diamond Tier
   {
     id: 'shawl-11',
     handle: 'wool-80-20-double-shawl',
@@ -330,7 +336,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Diamond',
     articleType: 'Wool 80-20 double',
     subCategory: 'Cashmere',
-    fabric: 'Wool 80-20 double',
+    fabric: '80% High-Density Wool',
     dimensions: '110 cm x 220 cm',
     weight: '265 grams',
     micronCount: '14.5 Microns',
@@ -340,12 +346,12 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       AUTHENTIC_SHAWL_FALLBACKS[1]
     ],
     colors: [{ name: 'Peach Soft', hex: '#FFE8CD' }],
-    tags: ['Wool 80-20 double', 'Diamond Tier'],
-    sops: { washing: ['Dry clean'], storage: ['Fold flat'], steaming: ['Low steam'], authenticity: ['Certified'] },
+    tags: ['Diamond Tier', 'Fringe Shawl'],
+    sops: ROYAL_KASHMIR_SOPS,
     isNewArrival: true,
   },
 
-  // 12. Pashmina - Wool 96 Pure Single (Diamond Tier)
+  // 12. Diamond Tier
   {
     id: 'shawl-12',
     handle: 'wool-96-pure-single-stole',
@@ -356,7 +362,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Diamond',
     articleType: 'Wool 96 Pure Single',
     subCategory: 'Pashmina',
-    fabric: 'Wool 96 Pure Single',
+    fabric: '96% Pure Ladakhi Wool',
     dimensions: '100 cm x 200 cm',
     weight: '170 grams',
     micronCount: '13.0 Microns',
@@ -366,12 +372,12 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       AUTHENTIC_SHAWL_FALLBACKS[2]
     ],
     colors: [{ name: 'Rose Blush', hex: '#FFDCDC' }],
-    tags: ['Wool 96 Pure Single', 'Diamond Tier'],
-    sops: { washing: ['Dry clean'], storage: ['Fold flat'], steaming: ['Low steam'], authenticity: ['Certified'] },
+    tags: ['Diamond Tier', '96 Pure Wool'],
+    sops: ROYAL_KASHMIR_SOPS,
     isNewArrival: false,
   },
 
-  // 13. Pashmina - Wool 72Pure Single (Platinum Tier)
+  // 13. Platinum Tier
   {
     id: 'shawl-13',
     handle: 'wool-72-pure-single-stole',
@@ -382,7 +388,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Platinum',
     articleType: 'Wool 72Pure Single',
     subCategory: 'Pashmina',
-    fabric: 'Wool 72Pure Single',
+    fabric: '72% Pure Wool Single',
     dimensions: '100 cm x 200 cm',
     weight: '180 grams',
     micronCount: '14.8 Microns',
@@ -392,12 +398,12 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       AUTHENTIC_SHAWL_FALLBACKS[0]
     ],
     colors: [{ name: 'Warm Amber', hex: '#FFD6BA' }],
-    tags: ['Wool 72Pure Single', 'Platinum Tier'],
-    sops: { washing: ['Dry clean'], storage: ['Fold flat'], steaming: ['Low steam'], authenticity: ['Certified'] },
+    tags: ['Platinum Tier', '72 Pure Wool'],
+    sops: ROYAL_KASHMIR_SOPS,
     isNewArrival: true,
   },
 
-  // 14. Heirloom - Wool 72Pure Double (Diamond Tier)
+  // 14. Diamond Tier
   {
     id: 'shawl-14',
     handle: 'wool-72-pure-double-shawl',
@@ -408,7 +414,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Diamond',
     articleType: 'Wool 72Pure double',
     subCategory: 'Heirloom',
-    fabric: 'Wool 72Pure double',
+    fabric: '72% Pure Double Wool',
     dimensions: '115 cm x 230 cm',
     weight: '260 grams',
     micronCount: '14.8 Microns',
@@ -418,12 +424,12 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       AUTHENTIC_SHAWL_FALLBACKS[1]
     ],
     colors: [{ name: 'Mocha Brown', hex: '#4A2B20' }],
-    tags: ['Wool 72Pure double', 'Diamond Tier'],
-    sops: { washing: ['Dry clean'], storage: ['Fold flat'], steaming: ['Low steam'], authenticity: ['Certified'] },
+    tags: ['Diamond Tier', 'Double Layer'],
+    sops: ROYAL_KASHMIR_SOPS,
     isNewArrival: false,
   },
 
-  // 15. Silk Fusion - Acrylic (Gold Tier)
+  // 15. Gold Tier
   {
     id: 'shawl-15',
     handle: 'acrylic-lightweight-everyday-wrap',
@@ -435,7 +441,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Gold',
     articleType: 'Acrylic',
     subCategory: 'Silk Fusion',
-    fabric: 'Acrylic',
+    fabric: 'Soft Acrylic Blend',
     dimensions: '90 cm x 190 cm',
     weight: '200 grams',
     micronCount: 'Synthetic Fiber',
@@ -445,12 +451,12 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       AUTHENTIC_SHAWL_FALLBACKS[2]
     ],
     colors: [{ name: 'Peach Soft', hex: '#FFE8CD' }],
-    tags: ['Acrylic', 'Gold Tier'],
-    sops: { washing: ['Machine wash gentle'], storage: ['Fold in wardrobe'], steaming: ['Low heat'], authenticity: ['Guaranteed Quality'] },
+    tags: ['Gold Tier', 'Daily Wear'],
+    sops: ROYAL_KASHMIR_SOPS,
     isNewArrival: true,
   },
 
-  // 16. Kani - Wool 96 Pure Single (Imperial Tier)
+  // 16. Imperial Tier
   {
     id: 'shawl-16',
     handle: 'kani-imperial-tapestry-stole',
@@ -462,7 +468,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Imperial',
     articleType: 'Wool 96 Pure Single',
     subCategory: 'Kani',
-    fabric: 'Wool 96 Pure Single',
+    fabric: 'Kani Needle Tapestry',
     dimensions: '100 cm x 200 cm',
     weight: '160 grams',
     micronCount: '12.5 Microns',
@@ -472,12 +478,12 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       AUTHENTIC_SHAWL_FALLBACKS[1]
     ],
     colors: [{ name: 'Antique Amber', hex: '#FFD6BA' }],
-    tags: ['Kani', 'Imperial Tier', 'Wool 96 Pure Single'],
-    sops: { washing: ['Dry Clean Only'], storage: ['Muslin Wrap'], steaming: ['Low Steam'], authenticity: ['Kashmir Mark'] },
+    tags: ['Imperial Tier', 'Kani Needle'],
+    sops: ROYAL_KASHMIR_SOPS,
     isNewArrival: true,
   },
 
-  // 17. Silk Fusion - Wool 60-40 Single (Platinum Tier)
+  // 17. Platinum Tier
   {
     id: 'shawl-17',
     handle: 'silk-fusion-rose-blush-wrap',
@@ -488,7 +494,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Platinum',
     articleType: 'Wool 60-40 single',
     subCategory: 'Silk Fusion',
-    fabric: 'Wool 60-40 single',
+    fabric: 'Mulberry Silk & Wool',
     dimensions: '100 cm x 200 cm',
     weight: '170 grams',
     micronCount: '14.0 Microns',
@@ -498,12 +504,12 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       AUTHENTIC_SHAWL_FALLBACKS[0]
     ],
     colors: [{ name: 'Rose Blush', hex: '#FFDCDC' }, { name: 'Peach Soft', hex: '#FFE8CD' }],
-    tags: ['Silk Fusion', 'Platinum Tier', 'Wool 60-40 single'],
-    sops: { washing: ['Dry Clean Only'], storage: ['Cotton Bag'], steaming: ['Low Steam'], authenticity: ['Certified'] },
+    tags: ['Platinum Tier', 'Silk Fusion'],
+    sops: ROYAL_KASHMIR_SOPS,
     isNewArrival: true,
   },
 
-  // 18. Heirloom - Wool 80-20 Double (Imperial Tier)
+  // 18. Imperial Tier
   {
     id: 'shawl-18',
     handle: 'heirloom-royal-ceremonial-doshala',
@@ -514,7 +520,7 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
     tierGrade: 'Imperial',
     articleType: 'Wool 80-20 double',
     subCategory: 'Heirloom',
-    fabric: 'Wool 80-20 double',
+    fabric: 'Reversible Heirloom Brocade',
     dimensions: '120 cm x 240 cm',
     weight: '310 grams',
     micronCount: '13.8 Microns',
@@ -524,8 +530,8 @@ export const MOCK_PRODUCTS: ShawlProduct[] = [
       AUTHENTIC_SHAWL_FALLBACKS[2]
     ],
     colors: [{ name: 'Mocha Mahogany', hex: '#4A2B20' }, { name: 'Antique Gold', hex: '#D4AF37' }],
-    tags: ['Heirloom', 'Imperial Tier', 'Wool 80-20 double'],
-    sops: { washing: ['Dry Clean Only'], storage: ['Acid-free Box'], steaming: ['Do not iron direct'], authenticity: ['Certified Royal Mark'] },
+    tags: ['Imperial Tier', 'Ceremonial Doshala'],
+    sops: ROYAL_KASHMIR_SOPS,
     isNewArrival: false,
   }
 ];

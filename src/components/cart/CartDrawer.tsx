@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 import { Link } from 'react-router-dom';
 import { CheckoutModal } from '../checkout/CheckoutModal';
-import { OrderReceiptModal } from '../admin/OrderReceiptModal';
+import { CustomerOrderSuccessModal } from '../checkout/CustomerOrderSuccessModal';
 import { Order } from '../../types/order';
 
 export const CartDrawer: React.FC = () => {
@@ -213,8 +213,8 @@ export const CartDrawer: React.FC = () => {
         onOrderPlaced={handleOrderPlaced}
       />
 
-      {/* Printable Receipt Modal */}
-      <OrderReceiptModal
+      {/* Customer Order Success Confirmation (No Print Option for Customer) */}
+      <CustomerOrderSuccessModal
         order={completedOrder}
         onClose={() => setCompletedOrder(null)}
       />

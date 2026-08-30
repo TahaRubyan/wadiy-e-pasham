@@ -107,46 +107,46 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* REDESIGNED GUARANTEE & TRUST BANNER */}
+      {/* REFINED GUARANTEE & TRUST BANNER (COMPACT & SMALLER FONT) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 0.5 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white p-6 sm:p-8 rounded-3xl border border-[#FFE8CD] shadow-sm"
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 sm:p-5 rounded-3xl border border-[#FFE8CD] shadow-sm"
         >
-          <div className="flex items-start gap-4">
-            <div className="p-3.5 bg-[#FFD6BA] text-[#4A2B20] rounded-2xl flex-shrink-0">
-              <ShieldCheck className="w-6 h-6" />
+          <div className="flex items-center gap-3 p-2">
+            <div className="p-2.5 bg-[#FFD6BA] text-[#4A2B20] rounded-xl flex-shrink-0">
+              <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-serif text-lg font-bold text-[#4A2B20]">100% Authentic Pashmina</h4>
-              <p className="text-xs text-stone-600 mt-1 leading-relaxed font-medium">
+              <h4 className="font-serif text-sm font-bold text-[#4A2B20]">100% Authentic Pashmina</h4>
+              <p className="text-[11px] text-stone-500 mt-0.5 leading-snug font-medium">
                 Sourced directly from certified weavers of Ladakh and Kashmir Valley.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-4">
-            <div className="p-3.5 bg-[#FFE8CD] text-[#4A2B20] rounded-2xl flex-shrink-0">
-              <Truck className="w-6 h-6" />
+          <div className="flex items-center gap-3 p-2">
+            <div className="p-2.5 bg-[#FFE8CD] text-[#4A2B20] rounded-xl flex-shrink-0">
+              <Truck className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-serif text-lg font-bold text-[#4A2B20]">Cash on Delivery & Express Shipping</h4>
-              <p className="text-xs text-stone-600 mt-1 leading-relaxed font-medium">
+              <h4 className="font-serif text-sm font-bold text-[#4A2B20]">Cash on Delivery & Express Shipping</h4>
+              <p className="text-[11px] text-stone-500 mt-0.5 leading-snug font-medium">
                 Doorstep delivery nationwide with Cash on Delivery (COD) options.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-4">
-            <div className="p-3.5 bg-[#FFDCDC] text-[#4A2B20] rounded-2xl flex-shrink-0">
-              <RefreshCw className="w-6 h-6" />
+          <div className="flex items-center gap-3 p-2">
+            <div className="p-2.5 bg-[#FFDCDC] text-[#4A2B20] rounded-xl flex-shrink-0">
+              <RefreshCw className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-serif text-lg font-bold text-[#4A2B20]">7-Day Guarantee</h4>
-              <p className="text-xs text-stone-600 mt-1 leading-relaxed font-medium">
+              <h4 className="font-serif text-sm font-bold text-[#4A2B20]">7-Day Guarantee</h4>
+              <p className="text-[11px] text-stone-500 mt-0.5 leading-snug font-medium">
                 Hassle-free exchange policy if you aren't completely delighted.
               </p>
             </div>

@@ -8,6 +8,7 @@ interface OrderContextType {
   placeOrder: (customer: CustomerDetails, items: CartItem[], paymentMethod: PaymentMethod) => Order;
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
   updateParcelLocation: (orderId: string, location: string) => void;
+  assignCourierTracking: (orderId: string, trackingId: string, partner?: string) => void;
   isAdminAuthenticated: boolean;
   loginAdmin: (password: string) => boolean;
   logoutAdmin: () => void;
@@ -157,6 +158,22 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     );
   };
 
+  const assignCourierTracking = (orderId: string, trackingId: string, partner: string = 'TCS Express') => {
+    setOrders((prev) =>
+      prev.map((ord) =>
+        ord.id === orderId
+          ? {
+              ...ord,
+              courierTrackingId: trackingId,
+              courierPartner: partner,
+              status: 'Confirmed',
+              currentLocation: `Handed over to ${partner} — Courier Tracking #${trackingId}`,
+            }
+          : ord
+      )
+    );
+  };
+
   return (
     <OrderContext.Provider
       value={{
@@ -164,6 +181,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         placeOrder,
         updateOrderStatus,
         updateParcelLocation,
+        assignCourierTracking,
         isAdminAuthenticated,
         loginAdmin,
         logoutAdmin
